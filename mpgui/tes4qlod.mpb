@@ -1,0 +1,74 @@
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[MPGUI]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+GUIRequestVersion -value="0.99"
+
+## doonce prevents multi execution
+@!tes4qlod_doonce GUIConsoleEcho -text="Written for tes4qlod"
+@!tes4qlod_doonce GUITab -help="Options for Lightwave's TES4qLOD" -name="tes4qlod" -text="Lightwave's TES4qLOD" 
+SetFlag -name=tes4qlod_doonce -hidden
+
+SetOption -noskipinfo ;avoid nasty skip messenges in loop mode
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[tes4qlod]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+## makes sure that tab is disabled if no worldspace is selected:
+GUIEnable -name=tes4qlod
+@!_worldspace GUIDisable -name=tes4qlod
+
+## Just some info:
+GUITextBox -text="Please select what TES4qLOD should do" -name=tes4qlod_into -vdist=10
+
+GUITextBox -text="Select resolution per quad:" -name=tes4qlod_into2 -vdist=10
+
+## Add a drop down menu, first the parent:
+GUIDropDown -name=tes4qlod_resolution -help="Select the resolution for a single quad (N.B. Vanilla has 512x512)" -vdist=3
+## and now the items:
+GUIDropDownItem -parent=tes4qlod_resolution -name=f1024 -text="1024x1024 pixel [recommended]" -select
+GUIDropDownItem -parent=tes4qlod_resolution -name=f2048 -text="2048x2048 pixel" 
+GUIDropDownItem -parent=tes4qlod_resolution -name=f4096 -text="4096x4096 pixel" 
+## makes the drop-down menu grey until checkbox "tes4qlod_resolution" is selected
+
+## this converts the GUI-flags into command-line-flags:
+SetFlag -name=tes4qlod_flag_q -value=""
+@f1024 SetFlag -name=tes4qlod_flag_q -value="-q 1"
+@f2048 SetFlag -name=tes4qlod_flag_q -value="-q 2"
+@f4096 SetFlag -name=tes4qlod_flag_q -value="-q 4"
+
+GUITextBox -text="Execution options:" -name=tes4qlod_into3 -vdist=10
+
+## A flag (default disabled) for asking about the "-B" flag
+GUICheckBox -name=option_bmp -text="Stop after bmp creation" -help="If this option is checked, it does not create the dds file, and does not move the files. This allows you to use a different dds compression program. If unsure, leave unchecked"
+## Converts flag:
+SetFlag -name=tes4qlod_flag_b -value=""
+@option_bmp SetFlag -name=tes4qlod_flag_b -value="-B"
+
+## A flag about the total map:
+GUICheckBox -name=option_map -text="Create full map of wordspace" -help="Creates a full map of your worldspace"
+SetFlag -name=tes4qlod_flag_f -value=""
+@option_map SetFlag -name=tes4qlod_flag_f -value="-f"
+
+## The final button. Once the button is pressed, the flag "exec1" is set for one single run of this section
+GUIButton -name=exec1 -text="Start TES4qLOD execution" -vdist=10
+
+## Only for debugging:
+### GUIConsoleEcho -text="flags: $_flaglist $_modlist"
+
+## The execution command:
+@exec1 @_worldspace GUIExec -exe="tes4qlod.exe  $tes4qlod_flag_b $tes4qlod_flag_f $tes4qlod_flag_q $_worldspace  \"$_modlist\" "
+
+## Error messages, just in case that some thing happened
+## One can use console messages, or pop-up windows
+@exec1 @!f1024 @!f2048 @!f4096 GUIMessageBox -name="Warning" -text="Error: no resolution set"
+@exec1 @!_worldspace GUIMessageBox -name="Warning" -text="Error: no worldspace selected"
+
+
+
+
+
+
+ 

@@ -1,0 +1,22 @@
+[MPGUI]
+
+GUIRequestVersion -value="0.99"
+
+## doonce prevents multi execution
+@!hello_doonce GUIConsoleEcho -text="This is my hello world example"
+@!hello_doonce GUITab -help="Options for the world" -name="myapplication" -text="My application" 
+SetFlag -name=hello_doonce -hidden
+
+[myapplication]
+
+SetOption -noskipinfo ;avoid nasty skip messanges in loop mode
+
+GUITextBox -text="Select the options" -name=hello_intro -vdist=10 
+
+GUICheckBox -name=hello_option1 -text="Use the resolution" -help="If this is enabled, you can select a resolution" -select
+
+GUIDropDown -name=hello_option2 -help="Select a resolution" -vdist=3
+GUIDropDownItem -parent=hello_option2 -name=hello_option3 -text="Low" 
+GUIDropDownItem -parent=hello_option2 -name=hello_option4 -text="High" -select
+GUIEnable -name=hello_option2
+@!hello_option1 GUIDisable -name=hello_option2

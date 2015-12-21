@@ -1,0 +1,234 @@
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[_gamemode]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+AddGame              -n=1 -name=Morrowind
+SetGameSearchPattern -n=1 -value="morrowind"
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[MPGUI]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+GUIRequestVersion -value="0.99"
+
+## doonce prevents multi execution
+@!tesannwyn_doonce GUIConsoleEcho -text="This batch file was written for TESAnnwyn"
+@!tesannwyn_doonce GUITab -help="Options for Lightwave's TESAnnwyn" -name="tesannwyn" -text="TESAnnwyn (Export)" 
+@!tesannwyn_doonce GUITab -help="Options for Lightwave's TESAnnwyn" -name="tesannwyn_im" -text="TESAnnwyn (Import)" 
+## For Morrowind I need gamedir -> can only be done here
+@!tesannwyn_doonce @_gamemode=Morrowind SetGamePluginFile -n=1 -value="$_gamedir\..\Morrowind.ini"
+
+SetFlag -name=tesannwyn_doonce -hidden
+SetOption -noskipinfo ;avoid nasty skip messenges in loop mode
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[tesannwyn]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+## makes sure that tab is disabled if no worldspace is selected:
+GUIEnable -name=tesannwyn
+@!_worldspace GUIDisable -name=tesannwyn
+
+@_gamemode=Morrowind GUIDisable -name=tab_ws
+@_gamemode=Morrowind GUIEnable  -name=tesannwyn
+
+## Just some info:
+GUITextBox -text="Select the option for TESAnnwyn's export functions" -name=tesannwyn_intro -vdist=10
+
+## Add a drop down menu, first the parent:
+GUIDropDown -name=tesannwyn_pictureformat -help="Picture format type RAW or BMP" -vdist=3
+## and now the items:
+GUIDropDownItem -parent=tesannwyn_pictureformat -name=f_raw -text="Raw" 
+GUIDropDownItem -parent=tesannwyn_pictureformat -name=f_bmp -text="Bitmap" -select
+## Conversion 
+@f_raw SetFlag -name=tesannwyn_flag_p -value="-p 1"
+@f_bmp SetFlag -name=tesannwyn_flag_p -value="-p 2"
+
+## Add a drop down menu, first the parent:
+GUIDropDown -name=tesannwyn_picturebit -help="Picture bit depth" -vdist=3
+## and now the items:
+GUIDropDownItem -parent=tesannwyn_picturebit -name=f_8 -text="8 bit" 
+GUIDropDownItem -parent=tesannwyn_picturebit -name=f_16 -text="16 bit" 
+GUIDropDownItem -parent=tesannwyn_picturebit -name=f_32 -text="32 bit" -select
+@f_8  SetFlag -name=tesannwyn_flag_b -value="-b 8"
+@f_16 SetFlag -name=tesannwyn_flag_b -value="-b 16"
+@f_32 SetFlag -name=tesannwyn_flag_b -value="-b 32"
+
+####Offset
+GUITextBox -text="Height offset" -name=tesannwyn_intro2 -vdist=10 -width=0.30
+GUITextBox -text="0" -sameline -width=0.20 -name=tesannwyn_offset -input -help="Offset the height of all exported height points by the specified number of Game Units (a whole number)."
+@_gamemode=Skyrim @!gm_doonce SetFlag -name=tesannwyn_offset -value="18040"
+@_gamemode SetFlag -name=gm_doonce
+
+####Scale
+GUITextBox -text="Scaling" -name=tesannwyn_intro4 -width=0.30 -sameline
+GUITextBox -text="1.0" -sameline -width=0.20  -name=tesannwyn_scaling -input -help="Scale all height data by a factor of n (a floating point number: e.g. 2 means double the height , 0.25 means a quarter etc.)"
+
+####Vertex Map
+GUICheckBox -name=vertex_map -vdist=8 -text="Export the 24-bit Vertex Colour Map image" -help="Export the 24-bit Vertex Colour Map image at the same time (it will always be called tesannwyn-vclr.bmp)"
+SetFlag -name=tesannwyn_flag_c -value=""
+@vertex_map SetFlag -name=tesannwyn_flag_c -value="-c"
+
+
+####Gridlines
+GUICheckBox -name=grid_lines -text="Draw black grid-lines at all cell boundaries" -help="Draw black grid-lines at all cell boundaries on all exported images (heightmap and vertex colour map)."
+SetFlag -name=tesannwyn_flag_g -value=""
+@grid_lines SetFlag -name=tesannwyn_flag_g -value="-g"
+
+###8bit only
+GUICheckBox -name=shrink -text="Shrink all heights to the range 0-255" -help="For 8-bit Greyscale only, this option will automatically rescale and offset so all heights lie between the range 0-255. (NB. no number argument is required)."
+GUIEnable -name=shrink
+@!f_8 GUIDisable -name=shrink -unselect
+SetFlag -name=tesannwyn_flag_r -value=""
+@shrink SetFlag -name=tesannwyn_flag_r -value="-r"
+
+###Export texture placement map
+GUICheckBox -name=placement_map -text="Export texture placement map" -help="Export texture placement map, game format is chosen automatically"
+SetFlag -name=tesannwyn_flag_T -value=""
+@placement_map @_gamemode=Oblivion SetFlag -name=tesannwyn_flag_T -value="-T 4"
+@placement_map @_gamemode=Skyrim SetFlag -name=tesannwyn_flag_T -value="-T 5"
+
+## Only for debugging:
+## GUIConsoleEcho -text="flags: $_flaglist, mods: $_modlist"
+##########EXEC
+GUIButton -name=tesannwyn_exec -text="Start TESAnnwyn" -vdist=10
+@tesannwyn_exec @_worldspace GUIExec -exe="tesannwyn.exe $tesannwyn_flag_p $tesannwyn_flag_b -h $tesannwyn_offset -s $tesannwyn_scaling $tesannwyn_flag_c $tesannwyn_flag_g -w $_worldspace $tesannwyn_flag_r $tesannwyn_flag_T \"$_modlist\" "
+@tesannwyn_exec @!_worldspace GUIExec -exe="tesannwyn.exe $tesannwyn_flag_p $tesannwyn_flag_b -h $tesannwyn_offset -s $tesannwyn_scaling $tesannwyn_flag_c $tesannwyn_flag_g $tesannwyn_flag_r $tesannwyn_flag_T \"$_modlist\" "
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+[tesannwyn_im]
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+## Open the bmp/raw file
+GUITextBox -text="Select the bitmap which contains the heightmap:" -name=tesannwyn_im_intro1 -vdist=10 -width=0.30
+GUITextBox -text="Filename" -name=tesannwyn_im_filename -fileinput -sameline -width=0.70 -help="Select your bmp/raw heightmap"
+
+
+## This selects (automatically) the game mode
+SetFlag -name=tesannwyn_im_flag_i -value=""
+@_gamemode=Morrowind SetFlag -name=tesannwyn_im_flag_i -value="3"
+@_gamemode=Oblivion  SetFlag -name=tesannwyn_im_flag_i -value="4"
+@_gamemode=Fallout3  SetFlag -name=tesannwyn_im_flag_i -value="5"
+@_gamemode=Skyrim    SetFlag -name=tesannwyn_im_flag_i -value="Skyrim"
+
+ 
+####Worldspace
+GUITextBox -text="Enter a name for the new worldspace:" -name=tesannwyn_im_intro4 -vdist=10 -width=0.30
+GUITextBox -text="TESAnnwyn" -name=tesannwyn_im_flag_w -sameline -width=0.20 -input -help="(TES4 import only). The imported land will be created in the specified new Worldspace. The default worldspace is TESAnnwyn."
+GUITextBox -text="FormID:" -name=tesannwyn_im_intro4a  -sameline -width=0.30
+GUITextBox -text="" -name=tesannwyn_im_formid -sameline -width=0.20 -input -help="Force the newly created Worldspace to have this 'FormID'. Useful to preserve dependencies and LOD filenames. The 'FormID' is the reverse byte numerical format (e.g. as used by LOD files) rather than the hexadecimal form. If emtpy the unique time based FormID is used"
+SetFlag -name=tesannwyn_im_flag_F -value=""
+@!tesannwyn_im_formid="" SetFlag -name=tesannwyn_im_flag_F -value="-F $tesannwyn_im_formid"
+
+GUITextBox -text="Select the input format of the file:" -name=tesannwyn_im_intro5 -vdist=10 -width=0.30
+## Add a drop down menu, first the parent:
+GUIDropDown -name=tesannwyn_im_pictureformat -help="Picture format type RAW or BMP" -sameline  -width=0.35
+## and now the items:
+GUIDropDownItem -parent=tesannwyn_im_pictureformat -name=f_im_raw -text="Raw input" 
+GUIDropDownItem -parent=tesannwyn_im_pictureformat -name=f_im_bmp -text="Bitmap input" -select
+## Conversion 
+@f_im_raw SetFlag -name=tesannwyn_im_flag_p -value="-p 1"
+@f_im_bmp SetFlag -name=tesannwyn_im_flag_p -value="-p 2"
+
+GUIDropDown -name=tesannwyn_im_picturebit -help="Picture bit depth" -sameline -width=0.35
+## and now the items:
+GUIDropDownItem -parent=tesannwyn_im_picturebit -name=f_im_8 -text="8 bit import" 
+GUIDropDownItem -parent=tesannwyn_im_picturebit -name=f_im_16 -text="16 bit import" 
+GUIDropDownItem -parent=tesannwyn_im_picturebit -name=f_im_32 -text="32 bit import" -select
+@f_im_8  SetFlag -name=tesannwyn_im_flag_b -value="-b 8"
+@f_im_16 SetFlag -name=tesannwyn_im_flag_b -value="-b 16"
+@f_im_32 SetFlag -name=tesannwyn_im_flag_b -value="-b 32"
+GUIEnable -name=tesannwyn_im_picturebit
+@!f_im_raw GUIDisable -name=tesannwyn_im_picturebit
+
+## dimensions for raw
+GUITextBox -text="Width (x) for raw file:" -name=tesannwyn_im_intro6 -width=0.30 -vdist=8
+GUITextBox -text="1024" -name=tesannwyn_im_raw_x -input -sameline -width=0.20
+GUITextBox -text="Height (y) for raw file:" -name=tesannwyn_im_intro7 -width=0.30 -sameline
+GUITextBox -text="768" -name=tesannwyn_im_raw_y -input -sameline -width=0.20
+GUIEnable -name=tesannwyn_im_raw_x
+@!f_im_raw GUIDisable -name=tesannwyn_im_raw_x
+GUIEnable -name=tesannwyn_im_raw_y
+@!f_im_raw GUIDisable -name=tesannwyn_im_raw_y
+
+####Offset
+GUITextBox -text="Height offset" -name=tesannwyn_intro8 -vdist=10 -width=0.30
+GUITextBox -text="0" -sameline -width=0.20 -name=tesannwyn_im_offset -input -help="Offset the imported landmass height by the specified number of Game Units (a whole number)."
+####Scale
+GUITextBox -text="Scaling" -name=tesannwyn_intro9 -width=0.30 -sameline
+GUITextBox -text="1.0" -sameline -width=0.20  -name=tesannwyn_im_scaling -input -help="Scale the imported landmass height points by the specified factor of number (a floating point number)."
+
+####Vertex Map
+GUICheckBox -vdist=10 -width=0.5 -name=vertex_map_im -text="Import colour image (must be called tesannwyn-vclr.bmp)" -help="Import a 24-bit colour image (must be called tesannwyn-vclr.bmp) with the heightmap. This will be written as the Vertex Colour Map data."
+SetFlag -name=tesannwyn_im_flag_c -value=""
+@vertex_map_im SetFlag -name=tesannwyn_im_flag_c -value="-c"
+###Texture placement map
+GUICheckBox -sameline -width=0.5 -name=placement_map_im -text="Import texture placement map" -help="Import texture placement map, game format is chosen automatically"
+SetFlag -name=tesannwyn_im_flag_T -value=""
+@placement_map_im @_gamemode=Oblivion SetFlag -name=tesannwyn_im_flag_T -value="-T 4"
+@placement_map_im @_gamemode=Skyrim SetFlag -name=tesannwyn_im_flag_T -value="-T 5"
+
+## starting cell
+GUITextBox -text="Starting x-cell:" -name=tesannwyn_im_intro11 -width=0.30 -vdist=8
+GUITextBox -text="0" -name=tesannwyn_im_cell_x -input -sameline -width=0.20
+GUITextBox -text="Starting y-cell:" -name=tesannwyn_im_intro12 -width=0.30 -sameline
+GUITextBox -text="0" -name=tesannwyn_im_cell_y -input -sameline -width=0.20
+
+####Modindex option
+GUICheckBox -vdist=10 -width=0.5 -name=modindex_im -text="Use modindex 00" -help="All CELL and LAND records are created in modindex 00, which means other ESPs can reference the heightmap ESP and there are no disappearing land issues."
+SetFlag -name=tesannwyn_im_flag_o -value=""
+@modindex_im SetFlag -name=tesannwyn_im_flag_o -value="-0"
+
+## Height limits
+GUICheckBox -vdist=10 -width=0.3 -name=use_min_im -text="Use height minimum" -help="Limit all imported heights to min game units"
+GUITextBox -text="Minimum:" -name=tesannwyn_im_intro13 -width=0.20 -sameline
+GUITextBox -text="-2048" -name=tesannwyn_im_low -input -sameline -width=0.20
+GUIEnable -name=tesannwyn_im_low
+@!use_min_im GUIDisable -name=tesannwyn_im_low
+
+GUICheckBox -vdist=10 -width=0.3 -name=use_max_im -text="Use height maximum" -help="Limit all imported heights to max game units"
+GUITextBox -text="Maximum:" -name=tesannwyn_im_intro14 -width=0.20 -sameline
+GUITextBox -text="32760" -name=tesannwyn_im_max -input -sameline -width=0.20
+GUIEnable -name=tesannwyn_im_max
+@!use_max_im GUIDisable -name=tesannwyn_im_max
+@!use_min_im GUIDisable -name=tesannwyn_im_max
+GUIEnable -name=use_max_im
+@!use_min_im GUIDisable -name=use_max_im -unselect
+
+SetFlag -name=tesannwyn_im_flag_l -value=""
+@use_min_im @!use_max_im SetFlag -name=tesannwyn_im_flag_l -value="-l $tesannwyn_im_low"
+@use_min_im @use_max_im SetFlag -name=tesannwyn_im_flag_l -value="-l $tesannwyn_im_low,$tesannwyn_im_max"
+
+## Texture options
+GUITextBox -text="Choose one of the texture options:" -name=tesannwyn_im_intro15a -vdist=10 
+GUICheckBox -vdist=10 -width=0.3 -name=use_tex_im -text="Use single texture" -help="Apply a single texture to the entire landscape."
+GUITextBox -text="FormID:" -name=tesannwyn_im_intro15 -width=0.20 -sameline
+GUITextBox -text="00017843" -name=tesannwyn_im_texid -input -sameline -width=0.20
+GUIEnable -name=tesannwyn_im_texid
+@!use_tex_im GUIDisable -name=tesannwyn_im_texid
+SetFlag -name=tesannwyn_im_flag_small_t -value=""
+@use_tex_im SetFlag -name=tesannwyn_im_flag_small_t -value="-t $tesannwyn_im_texid"
+
+GUICheckBox -vdist=8 -width=0.3 -name=use_custom_tex_im -text="Use custom texture" -help="Apply a custom texture across the entire landscape."
+GUITextBox -text="EID:" -name=tesannwyn_im_intro16 -width=0.15 -sameline
+GUITextBox -text="MyID" -name=tesannwyn_im_custom_texid -input -sameline -width=0.15 -help="The EditorID you want your texture to be called"
+GUITextBox -text="Filename:" -name=tesannwyn_im_intro17 -width=0.15 -sameline
+GUITextBox -text="File.dds" -name=tesannwyn_im_custom_file -input -sameline -width=0.15 -help="Filename (dds) of the texture file (e.g. mydesert.dds). Oblivion expects all landscape texture files to be under the folder Data\Textures\Landscape so make sure your texture file is placed in there."
+GUIEnable -name=tesannwyn_im_custom_texid
+GUIEnable -name=tesannwyn_im_custom_file
+@!use_custom_tex_im GUIDisable -name=tesannwyn_im_custom_texid
+@!use_custom_tex_im GUIDisable -name=tesannwyn_im_custom_file
+SetFlag -name=tesannwyn_im_flag_small_u -value=""
+@use_custom_tex_im SetFlag -name=tesannwyn_im_flag_small_u -value="-u $tesannwyn_im_custom_texid,$tesannwyn_im_custom_file"
+
+
+## Execute TESAnnwyn
+GUIButton -name=tesannwyn_im_exec -text="Start TESAnnwyn" -vdist=10
+@tesannwyn_im_exec @!tesannwyn_im_filename="Filename" GUIExec -exe="tesannwyn.exe -w $tesannwyn_im_flag_w $tesannwyn_im_flag_o $tesannwyn_im_flag_small_u $tesannwyn_im_flag_l -x $tesannwyn_im_cell_x -y $tesannwyn_im_cell_y -i $tesannwyn_im_flag_i $tesannwyn_im_flag_T $tesannwyn_im_flag_c -h $tesannwyn_im_offset -s $tesannwyn_im_scaling $tesannwyn_im_flag_F $tesannwyn_im_flag_p $tesannwyn_im_flag_b -d $tesannwyn_im_raw_x$x$tesannwyn_im_raw_y \"$tesannwyn_im_filename\""
+@tesannwyn_im_exec @tesannwyn_im_filename="Filename" GUIMessageBox -title="Error" -text="No filename chosen"
+
+

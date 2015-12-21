@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mpgui", "mpgui\mpgui.vcxproj", "{AB7DF6F9-EC37-474F-9ADB-1D082F48606D}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "MPGUI-Setup", "MPGUI-Setup\MPGUI-Setup.vdproj", "{57DDE410-7100-4EC8-9B90-AF42ED67CE29}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AB7DF6F9-EC37-474F-9ADB-1D082F48606D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AB7DF6F9-EC37-474F-9ADB-1D082F48606D}.Debug|Win32.Build.0 = Debug|Win32
+		{AB7DF6F9-EC37-474F-9ADB-1D082F48606D}.Release|Win32.ActiveCfg = Release|Win32
+		{AB7DF6F9-EC37-474F-9ADB-1D082F48606D}.Release|Win32.Build.0 = Release|Win32
+		{57DDE410-7100-4EC8-9B90-AF42ED67CE29}.Debug|Win32.ActiveCfg = Debug
+		{57DDE410-7100-4EC8-9B90-AF42ED67CE29}.Release|Win32.ActiveCfg = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
