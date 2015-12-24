@@ -7,6 +7,9 @@ LogFile                   -value="$_workdir\mpgui.log"
 
 ## 1, 3, 4 reserved for Morrowind, Fallout 3 and FalloutNV
 
+AddGame              -n=1 -name=Morrowind
+SetGamePluginFile    -n=1 -value="$_gamedir\..\Morrowind.ini"
+SetGameSearchPattern -n=1 -value="morrowind"
 
 AddGame              -n=2 -name=Oblivion
 SetGamePluginFile    -n=2 -value="$_appdata\Oblivion\plugins.txt"
@@ -18,10 +21,20 @@ SetGamePluginFile    -n=3 -value="$_appdata\Fallout3\plugins.txt"
 SetGameSearchPattern -n=3 -value="Fallout 3"
 SetGameStdWorldspace -n=3 -value="Wasteland"
 
+AddGame              -n=4 -name=FalloutNV
+SetGamePluginFile    -n=4 -value="$_appdata\FalloutNV\plugins.txt"
+SetGameSearchPattern -n=4 -value="Fallout New Vegas"
+SetGameStdWorldspace -n=4 -value="WastelandNV"
+
 AddGame              -n=5 -name=Skyrim
 SetGamePluginFile    -n=5 -value="$_appdata\Skyrim\plugins.txt"
 SetGameSearchPattern -n=5 -value="skyrim"
 SetGameStdWorldspace -n=5 -value="Tamriel"
+
+AddGame              -n=6 -name=Fallout4
+SetGamePluginFile    -n=6 -value="$_appdata\Fallout4\plugins.txt"
+SetGameSearchPattern -n=6 -value="Fallout 4"
+SetGameStdWorldspace -n=6 -value="Commonwealth"
 
 ;SetPath                   -value="$_workdir\ini\mpgui\"
 

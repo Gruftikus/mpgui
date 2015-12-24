@@ -62,10 +62,10 @@ extern const char *plugin[MAX_GAMES];
 extern const char *pattern[MAX_GAMES];
 extern const char *std_ws[MAX_GAMES];
 
-extern float guiwidth, guiheight, vdist;
+extern float guiwidth, guiheight, vdist, value;
 extern char *guiname, *guitab, *guitext, *guihelp, *guiparent;
 extern char *flagtext;
-extern int   myswitch, textinput, fileinput, sameline, guienabled;
+extern int   myswitch, textinput, fileinput, sameline, guienabled, dumpbatch, unselect;
 
 /* ----------------------------------- */
 
@@ -277,6 +277,135 @@ public:
 	virtual int RegisterOptions(void);
 	virtual int Prepare(void);
 
+};
+
+/* ----------------------------------- */
+
+class llGUIDropDownItem : public llWorker {
+
+public:
+
+	llGUIDropDownItem();
+
+	virtual llWorker * Clone() {
+		return new llGUIDropDownItem(*this);
+	}
+
+	virtual int RegisterOptions(void);
+	virtual int Prepare(void);
+
+};
+
+/* ----------------------------------- */
+
+class llGUIButton : public llWorker {
+
+public:
+
+	llGUIButton();
+
+	virtual llWorker * Clone() {
+		return new llGUIButton(*this);
+	}
+
+	virtual int RegisterOptions(void);
+	virtual int Prepare(void);
+
+};
+
+/* ----------------------------------- */
+
+class llGUIExec : public llWorker {
+
+public:
+
+	llGUIExec();
+
+	virtual llWorker * Clone() {
+		return new llGUIExec(*this);
+	}
+
+	virtual int RegisterOptions(void);
+	virtual int Prepare(void);
+
+};
+
+/* ----------------------------------- */
+
+class llGUIEnable : public llWorker {
+
+public:
+
+	llGUIEnable();
+
+	virtual llWorker * Clone() {
+		return new llGUIEnable(*this);
+	}
+
+	virtual int RegisterOptions(void);
+	virtual int Prepare(void);
+
+};
+
+/* ----------------------------------- */
+
+class llGUIDisable : public llWorker {
+
+public:
+
+	llGUIDisable();
+
+	virtual llWorker * Clone() {
+		return new llGUIDisable(*this);
+	}
+
+	virtual int RegisterOptions(void);
+	virtual int Prepare(void);
+};
+
+/* ----------------------------------- */
+
+class llGUIMessageBox : public llWorker {
+
+public:
+
+	llGUIMessageBox();
+
+	virtual llWorker * Clone() {
+		return new llGUIMessageBox(*this);
+	}
+
+	virtual int RegisterOptions(void);
+};
+
+/* ----------------------------------- */
+
+class llGUIWindowSize : public llWorker {
+
+public:
+
+	llGUIWindowSize();
+
+	virtual llWorker * Clone() {
+		return new llGUIWindowSize(*this);
+	}
+
+	virtual int RegisterOptions(void);
+};
+
+/* ----------------------------------- */
+
+class llGUIRequestVersion : public llWorker {
+
+public:
+
+	llGUIRequestVersion();
+
+	virtual llWorker * Clone() {
+		return new llGUIRequestVersion(*this);
+	}
+
+	virtual int RegisterOptions(void);
 };
 
 #endif

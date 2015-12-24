@@ -75,6 +75,13 @@ namespace mpgui {
 			batch->RegisterWorker(new llGUITextBox());
 			batch->RegisterWorker(new llGUICheckBox());
 			batch->RegisterWorker(new llGUIDropDown());
+			batch->RegisterWorker(new llGUIDropDownItem());
+			batch->RegisterWorker(new llGUIButton());
+			batch->RegisterWorker(new llGUIExec());
+			batch->RegisterWorker(new llGUIEnable());
+			batch->RegisterWorker(new llGUIDisable());
+			batch->RegisterWorker(new llGUIMessageBox());
+			batch->RegisterWorker(new llGUIRequestVersion());
 			batch->RegisterWorker(new llSetPath());
 
 
@@ -125,15 +132,11 @@ namespace mpgui {
 				String ^rgValue = gcnew String(rk->GetValue("Local Appdata")->ToString());
 				msclr::interop::marshal_context cxt; 
 				char *tmp2 = _llUtils()->NewString(cxt.marshal_as<const char*>(rgValue));
-				//char *tmp2 = new char[strlen(cxt.marshal_as<const char*>(rgValue))+1];
-				//strcpy_s(tmp2,strlen(cxt.marshal_as<const char*>(rgValue))+1,cxt.marshal_as<const char*>(rgValue));
 				_llUtils()->SetValue("_appdata", tmp2);
 				_llUtils()->SetHidden("_appdata");
 			}
 			msclr::interop::marshal_context cxt; 
 			char *tmp2 =  _llUtils()->NewString(cxt.marshal_as<const char*>(Directory::GetCurrentDirectory()));
-			//char *tmp2 = new char[strlen(cxt.marshal_as<const char*>(Directory::GetCurrentDirectory()))+1];
-			//strcpy_s(tmp2,strlen(cxt.marshal_as<const char*>(Directory::GetCurrentDirectory()))+1,cxt.marshal_as<const char*>(Directory::GetCurrentDirectory()));
 			_llUtils()->SetValue("_workdir", tmp2);
 			_llUtils()->SetHidden("_workdir");
 			//searchdir = gcnew String(Directory::GetCurrentDirectory());
@@ -720,6 +723,9 @@ namespace mpgui {
 					RegistryKey ^rk = nullptr;
 					rk = Registry::LocalMachine->OpenSubKey(L"SOFTWARE\\Bethesda Softworks\\" + gcnew String(game[gamemode]));
 					if (rk == nullptr) {
+						rk = Registry::LocalMachine->OpenSubKey(L"SOFTWARE\\Wow6432Node\\Bethesda Softworks\\" + gcnew String(game[gamemode]));
+					}
+					if (rk == nullptr) {
 						mesg->WriteNextLine(LOG_ERROR, "No registry entry for selected game, chdir not possible");
 					} else {
 						String ^rgValue = gcnew String(rk->GetValue("Installed Path")->ToString());
@@ -809,6 +815,7 @@ namespace mpgui {
 				msclr::interop::marshal_context cxt; 
 				mesg->WriteNextLine(LOG_INFO, "Reading esp/esm files from '%s'",
 					cxt.marshal_as<char const*>(Directory::GetCurrentDirectory()));
+				Dump();
 
 				//Read plugins from directory
 				array<String^>^dirs1 = Directory::GetFiles(Directory::GetCurrentDirectory(), "*.esp" );
@@ -1042,7 +1049,7 @@ namespace mpgui {
 								 pos = tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Location.Y + 
 									 tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Height + vdist;
 								 if (sameline) 
-									 pos=tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Location.Y + vdist;
+									 pos = tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Location.Y + vdist;
 							 } //sameline
 							 ComboBox ^n = (gcnew System::Windows::Forms::ComboBox());
 							 n->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) 
@@ -1066,6 +1073,253 @@ namespace mpgui {
 							 n->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 							 n->SelectedIndexChanged += gcnew System::EventHandler(this, &Form1::my_SelectedIndexChanged);
 							 tab_app[j]->Controls->Add(n);
+						 }
+
+						 if (com == COM_GUIDROPDOWNITEM && tab<0 && j>=0) {
+							 int pos = 4;
+							 //first check for parent
+							 get_object(&tab, &obj, guiparent);
+							 if (tab>=0 && obj>=0) {
+								 //check for item itself
+								 int index = ((ComboBox^)tab_app[tab]->Controls[obj])->FindString(gcnew String(guitext));
+								 if (index < 0) {
+									 ((ComboBox^)tab_app[tab]->Controls[obj])->Items->Add(gcnew String(guitext));
+									 _llUtils()->AddFlag(guiname);
+									 _llUtils()->SetDescription(guiname, guitext);
+									 if (guienabled) {
+										 int num = (((ComboBox^)tab_app[tab]->Controls[obj])->Items->Count);
+										 ((ComboBox^)tab_app[tab]->Controls[obj])->SelectedIndex = num -1;
+										 _llUtils()->EnableFlag(guiname);
+									 } else {
+										 _llUtils()->DisableFlag(guiname);
+									 }
+								 }
+							 } else {
+								 mesg->WriteNextLine(LOG_ERROR, "Parent [%s] not found in [GUIDropDownItem]", guiparent);
+							 }
+						 }
+
+						 if (com == COM_GUIBUTTON && tab<0 && j>=0) {
+							 int pos = 4 + vdist;
+							 if (tab_app[j]->Controls->Count) {
+								 pos = tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Location.Y + 
+									 tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Height + vdist;
+								 if (sameline) 
+									 pos = tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Location.Y + vdist;
+							 } //sameline
+							 Button ^n = (gcnew System::Windows::Forms::Button());
+							 tab_app[j]->Controls->Add(n);
+							 n->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) 
+								 | System::Windows::Forms::AnchorStyles::Right));
+
+							 n->Location = System::Drawing::Point(4, pos);
+							 if (sameline && tab_app[j]->Controls->Count) {
+								 n->Location = System::Drawing::Point(8+tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Width+
+									 tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Location.X, pos); //sameline
+							 }
+							 n->Name = gcnew String(guiname);
+
+							 n->Size = System::Drawing::Size(tab_app[j]->Size.Width*guiwidth-8, guiheight); //sameline
+							 if (tab_app[j]->Size.Width - (n->Size.Width + n->Location.X) > 10) n->Anchor = 
+								 static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | 
+								 System::Windows::Forms::AnchorStyles::Left)));  //sameline
+							 n->TabIndex = 5;
+							 n->Text = gcnew String(guitext);
+							 toolTip1->SetToolTip(n, gcnew String(guihelp));
+							 _llUtils()->AddFlag(guiname);			 
+							 _llUtils()->DisableFlag(guiname);
+							 n->Click += gcnew System::EventHandler(this, &Form1::my_ButtonPressed);
+							 n->Tag = gcnew String("Button");
+						 }
+
+						 if (com == COM_GUIEXEC) {
+							 mesg->WriteNextLine(LOG_INFO, "Executing: '%s'", guitext);
+							 Dump();
+							 SECURITY_ATTRIBUTES saAttr; 
+							 saAttr.nLength = sizeof(SECURITY_ATTRIBUTES); 
+							 saAttr.bInheritHandle = TRUE; 
+							 saAttr.lpSecurityDescriptor = NULL; 
+							 HANDLE g_hChildStd_IN_Rd = NULL;
+							 //HANDLE g_hChildStd_IN_Wr = NULL;
+							 //HANDLE g_hChildStd_OUT_Rd = NULL;
+							 HANDLE g_hChildStd_OUT_Wr = NULL;
+							 HANDLE g_hChildStd_ERR_Wr = NULL;
+							 // Create a pipe for the child process's STDOUT.  
+							 if ( ! CreatePipe(&g_hChildStd_OUT_Rd, &g_hChildStd_OUT_Wr, &saAttr, 0) ) 
+								 mesg->WriteNextLine(LOG_ERROR, "StdoutRd CreatePipe"); 
+							 if ( ! CreatePipe(&g_hChildStd_ERR_Rd, &g_hChildStd_ERR_Wr, &saAttr, 0) ) 
+								 mesg->WriteNextLine(LOG_ERROR, "StderrRd CreatePipe"); 
+							 // Ensure the read handle to the pipe for STDOUT is not inherited.
+							 if ( ! SetHandleInformation(g_hChildStd_OUT_Rd, HANDLE_FLAG_INHERIT, 0) )
+								 mesg->WriteNextLine(LOG_ERROR, "Stdout SetHandleInformation"); 
+							 if ( ! SetHandleInformation(g_hChildStd_ERR_Rd, HANDLE_FLAG_INHERIT, 0) )
+								 mesg->WriteNextLine(LOG_ERROR, "Stdout SetHandleInformation"); 
+							 // Create a pipe for the child process's STDIN. 
+							 if (! CreatePipe(&g_hChildStd_IN_Rd, &g_hChildStd_IN_Wr, &saAttr, 0)) 
+								 mesg->WriteNextLine(LOG_ERROR, "Stdin CreatePipe"); 
+							 // Ensure the write handle to the pipe for STDIN is not inherited. 
+							 if ( ! SetHandleInformation(g_hChildStd_IN_Wr, HANDLE_FLAG_INHERIT, 0) )
+								 mesg->WriteNextLine(LOG_ERROR, "Stdin SetHandleInformation"); 
+							 Dump();
+							 //TCHAR szCmdline[]=TEXT(batch->guitext);
+							 PROCESS_INFORMATION piProcInfo; 
+							 STARTUPINFO siStartInfo;
+							 BOOL bSuccess = FALSE; 
+							 // Set up members of the PROCESS_INFORMATION structure. 
+							 ZeroMemory( &piProcInfo, sizeof(PROCESS_INFORMATION) );
+							 // Set up members of the STARTUPINFO structure. 
+							 // This structure specifies the STDIN and STDOUT handles for redirection.
+							 ZeroMemory( &siStartInfo, sizeof(STARTUPINFO) );
+							 siStartInfo.cb = sizeof(STARTUPINFO); 
+							 //siStartInfo.hStdError = g_hChildStd_OUT_Wr;
+							 siStartInfo.hStdError  = g_hChildStd_ERR_Wr;
+							 siStartInfo.hStdOutput = g_hChildStd_OUT_Wr;
+							 //siStartInfo.hStdOutput = NULL;
+							 siStartInfo.hStdInput = g_hChildStd_IN_Rd;
+							 siStartInfo.dwXSize = 0;
+							 siStartInfo.dwYSize = 0;
+							 siStartInfo.dwX = 99999;
+							 siStartInfo.dwY = 99999;
+							 siStartInfo.dwFlags |= (STARTF_USESTDHANDLES | STARTF_USESIZE | STARTF_USEPOSITION);
+							 // Create the child process.   
+							 int len = strlen(guitext)+1;
+							 wchar_t *wText = new wchar_t[len];
+							 memset(wText, 0, len);
+							 ::MultiByteToWideChar(CP_ACP, NULL, guitext, -1, wText, len);
+							 bSuccess = CreateProcess(NULL, 
+								 wText,     // command line 
+								 NULL,          // process security attributes 
+								 NULL,          // primary thread security attributes 
+								 TRUE,          // handles are inherited 
+								 0,             // creation flags 
+								 NULL,          // use parent's environment 
+								 NULL,          // use parent's current directory 
+								 &siStartInfo,  // STARTUPINFO pointer 
+								 &piProcInfo);  // receives PROCESS_INFORMATION 
+							 // If an error occurs, exit the application. 
+							 this->tab->SelectedIndex = 0;
+							 if ( ! bSuccess ) 
+								 mesg->WriteNextLine(LOG_ERROR, "Create Process failed (wrong command, or executable not existing?)"); 
+							 else {
+								 child_pid = piProcInfo.dwProcessId;
+								 // Close handles to the child process and its primary thread.
+								 // Some applications might keep these handles to monitor the status
+								 // of the child process, for example. 
+								 CloseHandle(piProcInfo.hProcess);
+								 CloseHandle(piProcInfo.hThread);
+
+								 DWORD dwRead, dwWritten; 
+								 CHAR chBuf[100]; 
+
+#if 1
+								 if (!CloseHandle(g_hChildStd_OUT_Wr)) 
+									 mesg->WriteNextLine(LOG_ERROR, "StdOutWr CloseHandle"); 
+								 if (backgroundWorker1->IsBusy) {
+									 this->backgroundWorker1->CancelAsync();
+									 MessageBox::Show(L"Background reader didn't finished - break and go for coffee....", L"Info");
+								 }
+								 while (backgroundWorker1->IsBusy);
+								 backgroundWorker1->RunWorkerAsync( 0 );
+#endif
+#if 1
+								 if (!CloseHandle(g_hChildStd_ERR_Wr)) 
+									 mesg->WriteNextLine(LOG_ERROR, "StdOutWr CloseHandle"); 
+								 if (backgroundWorker1a->IsBusy) {
+									 this->backgroundWorker1a->CancelAsync();
+									 MessageBox::Show(L"Background error reader didn't finished - break and go for coffee....", L"Info");
+								 }
+								 while (backgroundWorker1a->IsBusy);
+								 backgroundWorker1a->RunWorkerAsync( 0 );
+#endif
+
+								 if (!CloseHandle(g_hChildStd_IN_Rd)) 
+									 mesg->WriteNextLine(LOG_ERROR, "StdInRd CloseHandle"); 
+
+								 if (dumpbatch) {
+									 if (backgroundWorker2->IsBusy) {
+										 this->backgroundWorker2->CancelAsync();
+										 MessageBox::Show(L"Background writer didn't finished - break and go for coffee....", L"Info");
+									 }
+									 while (backgroundWorker2->IsBusy);
+									 backgroundWorker2->RunWorkerAsync( 0 );
+								 } else {
+									 CloseHandle(g_hChildStd_IN_Wr); 
+									 g_hChildStd_IN_Wr = NULL;
+								 }
+								 cancelProcessToolStripMenuItem->Enabled = true;
+								 tab_ws->Enabled = false;
+								 tab_plugins->Enabled = false;
+								 for (int w=0; w<tab_app->Length; w++) {
+									 tab_app[w]->Enabled = false;
+								 }							
+							 }
+						 } //guiexec
+
+						 if (com == COM_GUIENABLE) {
+							 if (tab>=0 && obj>=0) {
+								 tab_app[tab]->Controls[obj]->Enabled = 1;
+								 if (unselect || guienabled) {
+									 CheckBox ^tmp = dynamic_cast<CheckBox^>(tab_app[tab]->Controls[obj]);
+									 if (tmp) {
+										 if (unselect) {
+											 tmp->Checked = false;
+											 _llUtils()->DisableFlag(guiname);
+										 } else {
+											 tmp->Checked = true;
+											 _llUtils()->EnableFlag(guiname);
+										 }
+									 } else {
+										 mesg->WriteNextLine(LOG_ERROR, "Object [%s] is not a CheckBox, '-unselect' ignored", guiname);
+									 }
+								 }
+							 } else if (tab >= 0) {
+								 tab_app[tab]->Enabled = 1;
+							 } else if (_stricmp(guiname, "tab_ws") == 0) {
+								 tab_ws->Enabled = 1;
+							 } else {
+								 mesg->WriteNextLine(LOG_ERROR, "Object [%s] not found in [GUIEnable]", guiname);
+							 }
+						 }
+
+						 if (com == COM_GUIDISABLE) {
+							 if (tab>=0 && obj>=0) {
+								 tab_app[tab]->Controls[obj]->Enabled = 0;
+								 if (unselect || guienabled) {
+									 CheckBox ^tmp = dynamic_cast<CheckBox^>(tab_app[tab]->Controls[obj]);
+									 if (tmp) {
+										 if (unselect) {
+											 tmp->Checked = false;
+											 _llUtils()->DisableFlag(guiname);
+										 } else {
+											 tmp->Checked = true;
+											 _llUtils()->EnableFlag(guiname);
+										 }
+									 } else {
+										 mesg->WriteNextLine(LOG_ERROR, "Object [%s] is not a CheckBox, '-unselect' ignored", guiname);
+									 }
+								 }
+							 } else if (tab >= 0) {
+								 tab_app[tab]->Enabled = 0;							 
+							 } else if (_stricmp(guiname, "tab_ws") == 0) {
+								 tab_ws->Enabled = 0;
+							 } else {
+								 mesg->WriteNextLine(LOG_ERROR, "Object [%s] not found in [GUIDisable]", guiname);
+							 }
+						 }
+
+						 if (com == COM_GUIMESSAGEBOX) {
+							 MessageBox::Show(gcnew String(guitext),gcnew String(guiname));
+						 }
+
+						 if (com == COM_GUIWINDOWSIZE) {
+							 this->Size = System::Drawing::Size(guiwidth, guiheight);
+						 }
+
+						 if (com == COM_GUIREQUESTVERSION) {
+							 float v = *(_llUtils()->GetValueF("_mpgui_version"));
+							 if (value > v) 
+								 MessageBox::Show(L"This batch file needs MPGUI version " + value + L" or newer","Version Error");
+
 						 }
 
 					 } //while
@@ -1142,248 +1396,13 @@ namespace mpgui {
 							 }
 						 }
 
-						 //mesg->WriteNextLine(MH_WARNING,"%i",com);
+
+
+
 
 						 
 
-						 
-						
-						 
-						 if (com == COM_GUIDROPDOWNITEM && tab<0) {
-							 int pos=4;
-							 //first check for parent
-							 get_object(&tab, &obj, batch->guiparent);
-							 if (tab>=0 && obj>=0) {
-								 //check for item itself
-								 int index = ((ComboBox^)tab_app[tab]->Controls[obj])->FindString(gcnew String(batch->guitext));
-								 if (index<0) {
-									 ((ComboBox^)tab_app[tab]->Controls[obj])->Items->Add(gcnew String(batch->guitext));
-									 batch->AddFlag(batch->guiname);
-									 batch->SetDescription(batch->guiname,batch->guitext);
-									 if (batch->guienabled) {
-										 int num = (((ComboBox^)tab_app[tab]->Controls[obj])->Items->Count);
-										 ((ComboBox^)tab_app[tab]->Controls[obj])->SelectedIndex = num -1;
-										 batch->EnableFlag(batch->guiname);
-									 } else {
-										 batch->DisableFlag(batch->guiname);
-									 }
-								 }
-							 } else {
-								 mesg->WriteNextLine(MH_ERROR,"Parent [%s] not found in [GUIDropDownItem]",batch->guiparent);
-							 }
 
-						 }
-
-						 if (com == COM_GUIBUTTON && tab<0) {
-							 int pos=4 + batch->vdist;
-							 if (tab_app[j]->Controls->Count) pos=tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Location.Y + 
-								 tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Height + batch->vdist;
-							 Button^ n = (gcnew System::Windows::Forms::Button());
-							 tab_app[j]->Controls->Add(n);
-							 n->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) 
-								 | System::Windows::Forms::AnchorStyles::Right));
-
-							 n->Location = System::Drawing::Point(4, pos);
-							 n->Name = gcnew String(batch->guiname);
-
-							 n->Size = System::Drawing::Size(991, 20);
-							 n->TabIndex = 5;
-							 n->Text = gcnew String(batch->guitext);
-							 toolTip1->SetToolTip(n, gcnew String(batch->guihelp));
-							 batch->AddFlag(batch->guiname);			 
-							 batch->DisableFlag(batch->guiname);
-							 n->Click += gcnew System::EventHandler(this, &Form1::my_ButtonPressed);
-							 n->Tag = gcnew String("Button");
-						 }
-
-						 if (com == COM_GUIENABLE) {
-							 if (tab>=0 && obj>=0) {
-								 tab_app[tab]->Controls[obj]->Enabled=1;
-								 if (batch->unselect || batch->guienabled) {
-									 CheckBox ^tmp = dynamic_cast<CheckBox^>(tab_app[tab]->Controls[obj]);
-									 if (tmp) {
-										 if (batch->unselect) {
-											 tmp->Checked = false;
-											 batch->DisableFlag(batch->guiname);
-										 } else {
-											 tmp->Checked = true;
-											 batch->EnableFlag(batch->guiname);
-										 }
-									 } else {
-										 mesg->WriteNextLine(MH_ERROR,"Object [%s] is not a CheckBox, '-unselect' ignored",batch->guiname);
-									 }
-								 }
-							 } else if (tab>=0) {
-								 tab_app[tab]->Enabled=1;
-							 } else if (_stricmp(batch->guiname,"tab_ws")==0) {
-								 tab_ws->Enabled=1;
-							 } else {
-								 mesg->WriteNextLine(MH_ERROR,"Object [%s] not found in [GUIEnable]",batch->guiname);
-							 }
-						 }
-						 if (com == COM_GUIDISABLE) {
-							 if (tab>=0 && obj>=0) {
-								 tab_app[tab]->Controls[obj]->Enabled=0;
-								 if (batch->unselect || batch->guienabled) {
-									 CheckBox ^tmp = dynamic_cast<CheckBox^>(tab_app[tab]->Controls[obj]);
-									 if (tmp) {
-										 if (batch->unselect) {
-											 tmp->Checked = false;
-											 batch->DisableFlag(batch->guiname);
-										 } else {
-											 tmp->Checked = true;
-											 batch->EnableFlag(batch->guiname);
-										 }
-									 } else {
-										 mesg->WriteNextLine(MH_ERROR,"Object [%s] is not a CheckBox, '-unselect' ignored",batch->guiname);
-									 }
-								 }
-							 } else if (tab>=0) {
-								 tab_app[tab]->Enabled=0;							 
-							 } else if (_stricmp(batch->guiname,"tab_ws")==0) {
-								 tab_ws->Enabled=0;
-							 } else {
-								 mesg->WriteNextLine(MH_ERROR,"Object [%s] not found in [GUIDisable]",batch->guiname);
-							 }
-						 }
-						  if (com == COM_GUIMESSAGEBOX) {
-							 MessageBox::Show(gcnew String(batch->guitext),gcnew String(batch->guiname));
-						 }
-						 if (com == COM_GUIWINDOWSIZE) {
-							 this->Size = System::Drawing::Size(batch->gridx, batch->gridy );
-						 }
-
-						 if (com == COM_GUIREQUESTVERSION) {
-							 float v, v_req;
-							 sscanf(batch->myflagname,"%f",&v_req);
-							 sscanf(batch->GetValue("_mpgui_version"),"%f",&v);
-							 if (v_req>v) MessageBox::Show(L"This batch file needs MPGUI version " + gcnew String(batch->myflagname)
-								 + L" or newer","Version Error");
-
-						 }
-
-						 if (com == COM_GUIEXEC) {
-							 //if (0) {
-							 mesg->WriteNextLine(MH_INFO,"Executing: '%s'",batch->guitext);
-							 SECURITY_ATTRIBUTES saAttr; 
-							 saAttr.nLength = sizeof(SECURITY_ATTRIBUTES); 
-							 saAttr.bInheritHandle = TRUE; 
-							 saAttr.lpSecurityDescriptor = NULL; 
-							 HANDLE g_hChildStd_IN_Rd = NULL;
-							 //HANDLE g_hChildStd_IN_Wr = NULL;
-							 //HANDLE g_hChildStd_OUT_Rd = NULL;
-							 HANDLE g_hChildStd_OUT_Wr = NULL;
-							 HANDLE g_hChildStd_ERR_Wr = NULL;
-							 // Create a pipe for the child process's STDOUT.  
-							 if ( ! CreatePipe(&g_hChildStd_OUT_Rd, &g_hChildStd_OUT_Wr, &saAttr, 0) ) 
-								 mesg->WriteNextLine(MH_ERROR,"StdoutRd CreatePipe"); 
-							 if ( ! CreatePipe(&g_hChildStd_ERR_Rd, &g_hChildStd_ERR_Wr, &saAttr, 0) ) 
-								 mesg->WriteNextLine(MH_ERROR,"StderrRd CreatePipe"); 
-							 // Ensure the read handle to the pipe for STDOUT is not inherited.
-							 if ( ! SetHandleInformation(g_hChildStd_OUT_Rd, HANDLE_FLAG_INHERIT, 0) )
-								 mesg->WriteNextLine(MH_ERROR,"Stdout SetHandleInformation"); 
-							 if ( ! SetHandleInformation(g_hChildStd_ERR_Rd, HANDLE_FLAG_INHERIT, 0) )
-								 mesg->WriteNextLine(MH_ERROR,"Stdout SetHandleInformation"); 
-							 // Create a pipe for the child process's STDIN. 
-							 if (! CreatePipe(&g_hChildStd_IN_Rd, &g_hChildStd_IN_Wr, &saAttr, 0)) 
-								 mesg->WriteNextLine(MH_ERROR,"Stdin CreatePipe"); 
-							 // Ensure the write handle to the pipe for STDIN is not inherited. 
-							 if ( ! SetHandleInformation(g_hChildStd_IN_Wr, HANDLE_FLAG_INHERIT, 0) )
-								 mesg->WriteNextLine(MH_ERROR,"Stdin SetHandleInformation"); 
-							 Dump();
-							 //TCHAR szCmdline[]=TEXT(batch->guitext);
-							 PROCESS_INFORMATION piProcInfo; 
-							 STARTUPINFO siStartInfo;
-							 BOOL bSuccess = FALSE; 
-							 // Set up members of the PROCESS_INFORMATION structure. 
-							 ZeroMemory( &piProcInfo, sizeof(PROCESS_INFORMATION) );
-							 // Set up members of the STARTUPINFO structure. 
-							 // This structure specifies the STDIN and STDOUT handles for redirection.
-							 ZeroMemory( &siStartInfo, sizeof(STARTUPINFO) );
-							 siStartInfo.cb = sizeof(STARTUPINFO); 
-							 //siStartInfo.hStdError = g_hChildStd_OUT_Wr;
-							 siStartInfo.hStdError = g_hChildStd_ERR_Wr;
-							 siStartInfo.hStdOutput = g_hChildStd_OUT_Wr;
-							 //siStartInfo.hStdOutput = NULL;
-							 siStartInfo.hStdInput = g_hChildStd_IN_Rd;
-							 siStartInfo.dwXSize=0;
-							 siStartInfo.dwYSize=0;
-							 siStartInfo.dwX=99999;
-							 siStartInfo.dwY=99999;
-							 siStartInfo.dwFlags |= (STARTF_USESTDHANDLES | STARTF_USESIZE | STARTF_USEPOSITION);
-							 // Create the child process.   
-							 int len = strlen(batch->guitext)+1;
-							 wchar_t *wText = new wchar_t[len];
-							 memset(wText,0,len);
-							 ::MultiByteToWideChar( CP_ACP, NULL,batch->guitext, -1, wText,len );
-							 bSuccess = CreateProcess(NULL, 
-								 wText,     // command line 
-								 NULL,          // process security attributes 
-								 NULL,          // primary thread security attributes 
-								 TRUE,          // handles are inherited 
-								 0,             // creation flags 
-								 NULL,          // use parent's environment 
-								 NULL,          // use parent's current directory 
-								 &siStartInfo,  // STARTUPINFO pointer 
-								 &piProcInfo);  // receives PROCESS_INFORMATION 
-							 // If an error occurs, exit the application. 
-							 this->tab->SelectedIndex=0;
-							 if ( ! bSuccess ) 
-								 mesg->WriteNextLine(MH_ERROR,"Create Process failed (wrong command, or executable not existing?)"); 
-							 else
-							 {
-								 child_pid=piProcInfo.dwProcessId;
-								 // Close handles to the child process and its primary thread.
-								 // Some applications might keep these handles to monitor the status
-								 // of the child process, for example. 
-								 CloseHandle(piProcInfo.hProcess);
-								 CloseHandle(piProcInfo.hThread);
-
-								 DWORD dwRead, dwWritten; 
-								 CHAR chBuf[100]; 
-
-#if 1
-								 if (!CloseHandle(g_hChildStd_OUT_Wr)) 
-									 mesg->WriteNextLine(MH_ERROR,"StdOutWr CloseHandle"); 
-								 if (backgroundWorker1->IsBusy) {
-									 this->backgroundWorker1->CancelAsync();
-									 MessageBox::Show(L"Background reader didn't finished - break and go for coffee....", L"Info");
-								 }
-								 while (backgroundWorker1->IsBusy);
-								 backgroundWorker1->RunWorkerAsync( 0 );
-#endif
-#if 1
-								 if (!CloseHandle(g_hChildStd_ERR_Wr)) 
-									 mesg->WriteNextLine(MH_ERROR,"StdOutWr CloseHandle"); 
-								 if (backgroundWorker1a->IsBusy) {
-									 this->backgroundWorker1a->CancelAsync();
-									 MessageBox::Show(L"Background error reader didn't finished - break and go for coffee....", L"Info");
-								 }
-								 while (backgroundWorker1a->IsBusy);
-								 backgroundWorker1a->RunWorkerAsync( 0 );
-#endif
-
-								 if (!CloseHandle(g_hChildStd_IN_Rd)) 
-									 mesg->WriteNextLine(MH_ERROR,"StdInRd CloseHandle"); 
-
-								 if (batch->dumpbatch) {
-									 if (backgroundWorker2->IsBusy) {
-										 this->backgroundWorker2->CancelAsync();
-										 MessageBox::Show(L"Background writer didn't finished - break and go for coffee....", L"Info");
-									 }
-									 while (backgroundWorker2->IsBusy);
-									 backgroundWorker2->RunWorkerAsync( 0 );
-								 } else {
-									 CloseHandle(g_hChildStd_IN_Wr); 
-									 g_hChildStd_IN_Wr=NULL;
-								 }
-								 cancelProcessToolStripMenuItem->Enabled = true;
-								 tab_ws->Enabled = false;
-								 tab_plugins->Enabled = false;
-								 for (int w=0;w<tab_app->Length;w++) {
-									 tab_app[w]->Enabled = false;
-								 }							
-							 }
 						 }
 					 }
 #endif
