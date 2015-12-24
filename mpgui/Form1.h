@@ -8,8 +8,10 @@
 #include "..\..\lltool\include\lllogger.h"
 #include "..\..\lltool\include\llutils.h"
 #include "..\..\lltool\include\llcommands.h"
-
 #include "..\..\lltool\include\lllogfile.h"
+#include "..\..\lltool\include\llsetflag.h"
+
+#include "llguicommands.h"
 
 #include "tes4qlod_small.h"
 #include "info.h"
@@ -53,10 +55,28 @@ namespace mpgui {
 			cancelProcessToolStripMenuItem->Enabled = false;
 
 			mesg  = _llLogger();
-			mesg->NoAutoWrite();
+			mesg->NoAutoDump();
 
 			batch = new llCommands();
-			batch->RegisterWorker(new llLogFile());
+			batch->NoWorkerPrint();
+			llLogFile *LogFile = new llLogFile();
+			LogFile->SetFixedIndex(COM_LOGFILE);
+			batch->RegisterWorker(LogFile);
+			llSetFlag *SetFlag = new llSetFlag();
+			SetFlag->SetFixedIndex(COM_SETFLAG);
+			batch->RegisterWorker(SetFlag);
+			batch->RegisterWorker(new llGameMode());
+			batch->RegisterWorker(new llAddGame());
+			batch->RegisterWorker(new llSetGamePluginFile());
+			batch->RegisterWorker(new llSetGameStdWorldspace());
+			batch->RegisterWorker(new llSetGameSearchPattern());
+			batch->RegisterWorker(new llGUIConsoleEcho());
+			batch->RegisterWorker(new llGUITab());
+			batch->RegisterWorker(new llGUITextBox());
+			batch->RegisterWorker(new llGUICheckBox());
+			batch->RegisterWorker(new llGUIDropDown());
+			batch->RegisterWorker(new llSetPath());
+
 
 			textBox1->AppendText("This is Gruftikus' Multi Purpose GUI. Hello!" + Environment::NewLine );
 
@@ -174,9 +194,10 @@ namespace mpgui {
 					update_all_tabs(-1, "[_autoload]");
 				}
 			} else  {
-				textBox1->AppendText("Configuration file not found" + Environment::NewLine );
+				textBox1->AppendText("Configuration file not found" + Environment::NewLine);
 			} 
 			mesg->WriteNextLine(LOG_INFO, "This is MPGUI version %s", _llUtils()->GetValue("_mpgui_version"));
+			Dump();
 			if (args) OpenFile(gcnew String(args));
 		}
 
@@ -184,7 +205,7 @@ namespace mpgui {
 			//textBox1->BeginUpdate();
 			const char *x = mesg->ReadNextLine();
 			while (x) {
-				textBox1->AppendText(gcnew String(x) + Environment::NewLine );
+				textBox1->AppendText(gcnew String(x) + Environment::NewLine);
 				x = mesg->ReadNextLine();
 			}
 			//textBox1->EndUpdate();
@@ -603,8 +624,7 @@ namespace mpgui {
 
 			 //********************************************** Exit menu
 	private: System::Void exitToolStripMenuItem_Click(System::Object ^sender, System::EventArgs ^e) {
-				 if (batch)
-					batch->CloseLogfile();
+				 _llLogger()->CloseLogfile();
 				 Application::Exit();
 			 }
 
@@ -637,15 +657,15 @@ namespace mpgui {
 				}
 				//MessageBox::Show(gcnew String(file),gcnew String("bla"));
 				msclr::interop::marshal_context cxt; 
+				batch->Close();
 				const char *bla = cxt.marshal_as<char const*>(gcnew String(file));
-				batch->Open(bla, "[_gamemode]"); //geht nicht
+				batch->Open(bla, "[_gamemode]"); 
 				//batch->Open( (char*)(void*)Marshal::StringToHGlobalAnsi(file), "[_gamemode]");
 				mesg->WriteNextLine(LOG_INFO, "Open '%s'", cxt.marshal_as<char const*>(file)); //geht alleine
 				batch->ReadCache();
+				batch->CompileScript();
 				update_all_tabs(-1, "[_gamemode]");
 				int com;
-
-				//update_all_tabs(-1, "[_saved]");
 
 				Dump();
 				if (!gamemode) {
@@ -679,7 +699,7 @@ namespace mpgui {
 				update_game_path();
 
 				update_all_tabs(-1, "[MPGUI]");
-
+				
 				//Fill Plugin list (only ONCE!)
 
 				if (!plugins_done) {
@@ -848,11 +868,8 @@ namespace mpgui {
 						 *tab = ii;
 					 for (int ij=0; ij<tab_app[ii]->Controls->Count; ij++) {
 						 if (tab_app[ii]->Controls[ij]->Name == n) {
-							 *tab = ii;
 							 *obj = ij;
-							 //textBox1->AppendText(gcnew String(name) + ":" + gcnew String(tab_app[ii]->Controls[ij]->Name) +  Environment::NewLine );
-							 //mesg->WriteNextLine(MH_FATAL,"Found: %s %s",name, tab_app[ii]->Controls[ij]->Name);
-							 //Dump();
+							 *tab = ii;
 						 }
 					 }
 				 }
@@ -865,8 +882,11 @@ namespace mpgui {
 				 is_in_update = 1;
 				 this->SuspendLayout();
 				 msclr::interop::marshal_context cxt; 
+				 //mesg->WriteNextLine(LOG_INFO, "sec %s", sec);
+				 //Dump();
 
 				 for (int j=start; j<tab_app->Length; j++) {
+					 //mesg->WriteNextLine(LOG_INFO, "j %i", j);
 					 char tmp[1000];
 					 if (j < 0) {
 						 if (!sec)
@@ -875,29 +895,45 @@ namespace mpgui {
 							 sprintf(tmp, "%s", sec);
 					 } else 
 						 sprintf(tmp, "[%s]", cxt.marshal_as<char const*>(tab_app[j]->Name));
-					 batch->SetSection(tmp);
+					 //mesg->WriteNextLine(LOG_INFO, "tmp %s", tmp);
+					 batch->OpenSection(tmp);
 					 Dump();
 
-#if 0
 					 int com;
+
 					 while ((com = batch->GetCommand())>-2) {
+						 //mesg->WriteNextLine(LOG_INFO, "got %i", com);
 						 Dump();
 						 //before I continue I have to make sure that object is not on list already
-						 int tab=-1,obj=-1;
+						 int tab=-1, obj=-1;
 
 						 if (com == COM_SETPATH) {
-							 searchdir = gcnew String(batch->myflagname);
+							 searchdir = gcnew String(flagtext);
+						 }
+
+						 if (com == COM_GUISPLASHECHO) {
+							 mesg->WriteNextLine(LOG_ECHO, guitext);
+							 if (myswitch) this->tab->SelectedIndex=0;
+							 Dump();
+						 }
+						
+
+						 if ((com == COM_GUITEXTBOX || com == COM_GUICHECKBOX || com == COM_GUIENABLE || com == COM_GUIDISABLE ||
+							 com == COM_GUIDROPDOWN || com == COM_GUIDROPDOWNITEM || com == COM_GUIBUTTON) && j>=0) {
+								 get_object(&tab, &obj, guiname);
+								 //mesg->WriteNextLine(LOG_INFO, "got %i %i for %s", tab, obj, guiname);
+								 //Dump();
 						 }
 
 						 if (com == COM_GUIAPPLICATION) {
-							 int found=0;
-							 String ^name  = gcnew String(batch->guiname);
-							 for (int j=0;j<tab_app->Length;j++) {
-								 if (tab_app[j]->Name == name) found=1;
+							 int found = 0;
+							 String ^name  = gcnew String(guiname);
+							 for (int jj=0; jj<tab_app->Length; jj++) {
+								 if (tab_app[jj]->Name == name) found=1;
 							 }
 
 							 if (!found) {
-								 mesg->WriteNextLine(MH_INFO,"Create tab for '%s'",batch->guitext);
+								 mesg->WriteNextLine(LOG_INFO, "Create tab for '%s'", guitext);
 								 Dump();
 
 								 /* Add new TAB ******************************/
@@ -907,17 +943,135 @@ namespace mpgui {
 								 tab_app[tab_app->Length-1]->Name = name;
 								 tab_app[tab_app->Length-1]->Size = System::Drawing::Size(999, 322);
 								 tab_app[tab_app->Length-1]->TabIndex = tab_app->Length+3;
-								 tab_app[tab_app->Length-1]->Text = gcnew String(batch->guitext);
-								 tab_app[tab_app->Length-1]->ToolTipText = gcnew String(batch->guitab);
+								 tab_app[tab_app->Length-1]->Text = gcnew String(guitext);
+								 tab_app[tab_app->Length-1]->ToolTipText = gcnew String(guihelp);
 								 tab_app[tab_app->Length-1]->UseVisualStyleBackColor = true;
 								 this->tab->Controls->Add(tab_app[tab_app->Length-1]);
 								 tab_app[tab_app->Length-1]->Click += gcnew System::EventHandler(this, &Form1::tab_app_Click);
 								 tab_app[tab_app->Length-1]->ResumeLayout(false);
 							 } else {
-								 mesg->WriteNextLine(MH_WARNING,"Tab '%s' already created",batch->guiname);
+								 mesg->WriteNextLine(LOG_WARNING, "Tab '%s' already created", guiname);
 								 Dump();
 							 }
 						 }
+
+						 if (com == COM_GUITEXTBOX && tab<0 && j>=0) {
+							 int pos = 4 + vdist;
+							 if (tab_app[j]->Controls->Count) {
+								 pos = tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Location.Y + 
+									 tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Height + vdist;
+								 if (sameline) 
+									 pos = tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Location.Y + vdist;
+							 } //sameline
+							 TextBox ^n = (gcnew System::Windows::Forms::TextBox());
+							 n->Anchor      = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) 
+								 | System::Windows::Forms::AnchorStyles::Right));
+							 n->BorderStyle = System::Windows::Forms::BorderStyle::None;
+							 n->Location    = System::Drawing::Point(4, pos);
+							 if (sameline && tab_app[j]->Controls->Count) {
+								 n->Location = System::Drawing::Point(8+tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Width+
+									 tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Location.X, pos); //sameline
+							 }
+							 n->Name = gcnew String(guiname);
+							 toolTip1->SetToolTip(n, gcnew String(guihelp));
+							 _llUtils()->AddFlag(guiname);		
+							 if (textinput || fileinput) {
+								 if (textinput) {
+									 n->ReadOnly = false;
+								 }
+								 if (fileinput) {
+									 n->Click += gcnew System::EventHandler(this, &Form1::my_TextBoxClicked);
+									 //n->BackColor = Color::AntiqueWhite;
+								 }
+								 n->Leave += gcnew System::EventHandler(this, &Form1::my_TextChanged);
+								 n->TextChanged += gcnew System::EventHandler(this, &Form1::my_TextChanged);
+								 n->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
+								 _llUtils()->SetValue(guiname, guitext);	
+							 } else {
+								 n->ReadOnly = true;
+								 //n->Top=5;
+							 }
+							 n->Multiline = true;
+							 n->Size = System::Drawing::Size(tab_app[j]->Size.Width*guiwidth-8, guiheight); //sameline
+							 if (tab_app[j]->Size.Width - (n->Size.Width + n->Location.X) > 10) n->Anchor = 
+								 static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | 
+								 System::Windows::Forms::AnchorStyles::Left)));  //sameline
+							 n->TabIndex = 5;
+							 n->Text = gcnew String(guitext);
+							 tab_app[j]->Controls->Add(n);
+						 }
+
+						 if (com == COM_GUICHECKBOX && tab<0 && j>=0) {
+							 int pos = 4 + vdist;
+							 if (tab_app[j]->Controls->Count) {
+								 pos = tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Location.Y + 
+									 tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Height + vdist;
+								 if (sameline) 
+									 pos = tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Location.Y + vdist;
+							 } //sameline
+							 CheckBox ^n = (gcnew System::Windows::Forms::CheckBox());						
+							 n->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) 
+								 | System::Windows::Forms::AnchorStyles::Right));
+							 n->Location = System::Drawing::Point(4, pos);
+							 if (sameline && tab_app[j]->Controls->Count) {
+								 n->Location = System::Drawing::Point(8+tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Width+
+									 tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Location.X, pos); //sameline
+							 }
+							 n->Name = gcnew String(guiname);
+							 n->Size = System::Drawing::Size(tab_app[j]->Size.Width*guiwidth-8, guiheight); //sameline
+							 if (tab_app[j]->Size.Width - (n->Size.Width + n->Location.X) > 10) n->Anchor = 
+								 static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | 
+								 System::Windows::Forms::AnchorStyles::Left)));  //sameline
+							 n->TabIndex = 5;
+							 n->Text = gcnew String(guitext);
+							 toolTip1->SetToolTip(n, gcnew String(guihelp));
+							 _llUtils()->AddFlag(guiname);			 
+							 if (guienabled) {
+								 n->Checked = true;
+								 _llUtils()->EnableFlag(guiname);
+							 } else {
+								 _llUtils()->DisableFlag(guiname);
+							 }
+							 n->CheckedChanged += gcnew System::EventHandler(this, &Form1::my_CheckedChanged);
+							 tab_app[j]->Controls->Add(n);
+						 }
+
+						 if (com == COM_GUIDROPDOWN && tab<0 && j>=0) {
+							 int pos = 4 + vdist;
+							 if (tab_app[j]->Controls->Count) {
+								 pos = tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Location.Y + 
+									 tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Height + vdist;
+								 if (sameline) 
+									 pos=tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Location.Y + vdist;
+							 } //sameline
+							 ComboBox ^n = (gcnew System::Windows::Forms::ComboBox());
+							 n->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) 
+								 | System::Windows::Forms::AnchorStyles::Right));
+
+							 n->Location = System::Drawing::Point(4, pos);
+							 if (sameline && tab_app[j]->Controls->Count) {
+								 n->Location = System::Drawing::Point(8+tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Width+
+									 tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Location.X, pos); //sameline
+							 }
+							 n->Name = gcnew String(guiname);
+							 n->Size = System::Drawing::Size(tab_app[j]->Size.Width*guiwidth-8, guiheight); //sameline
+							 if (tab_app[j]->Size.Width - (n->Size.Width + n->Location.X) > 10) n->Anchor = 
+								 static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | 
+								 System::Windows::Forms::AnchorStyles::Left)));  //sameline
+							 n->TabIndex = 5;
+							 n->Text = gcnew String(guitext);
+							 toolTip1->SetToolTip(n, gcnew String(guihelp));
+							 _llUtils()->AddFlag(guiname);			 
+							 //batch->DisableFlag(batch->guiname);
+							 n->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
+							 n->SelectedIndexChanged += gcnew System::EventHandler(this, &Form1::my_SelectedIndexChanged);
+							 tab_app[j]->Controls->Add(n);
+						 }
+
+					 } //while
+
+#if 0
+						 
 
 						 if (com == COM_SETFLAG) {
 							 get_object(&tab, &obj, batch->myflagname);
@@ -990,119 +1144,11 @@ namespace mpgui {
 
 						 //mesg->WriteNextLine(MH_WARNING,"%i",com);
 
-						 if ((com == COM_GUIECHO || com == COM_GUICHECKBOX || com == COM_GUIENABLE || com == COM_GUIDISABLE ||
-							 com == COM_GUIDROPDOWN || com == COM_GUIDROPDOWNITEM || com == COM_GUIBUTTON) && j>=0) {
-								 get_object(&tab, &obj, batch->guiname);
-						 }
+						 
 
-						 if (com == COM_GUIECHO && tab<0) {
-							 int pos=4 + batch->vdist;
-							 if (tab_app[j]->Controls->Count) {
-								 pos=tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Location.Y + 
-									 tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Height + batch->vdist;
-								 if (batch->sameline) pos=tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Location.Y + batch->vdist;
-							 } //sameline
-							 TextBox^ n = (gcnew System::Windows::Forms::TextBox());
-							 n->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) 
-								 | System::Windows::Forms::AnchorStyles::Right));
-							 n->BorderStyle = System::Windows::Forms::BorderStyle::None;
-							 n->Location = System::Drawing::Point(4, pos);
-							 if (batch->sameline && tab_app[j]->Controls->Count) {
-								 n->Location = System::Drawing::Point(8+tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Width+
-									 tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Location.X, pos); //sameline
-							 }
-							 n->Name = gcnew String(batch->guiname);
-							 toolTip1->SetToolTip(n, gcnew String(batch->guihelp));
-							 batch->AddFlag(batch->guiname);		
-							 if (batch->textinput || batch->fileinput) {
-								 if (batch->textinput) {
-									 n->ReadOnly = false;
-								 }
-								 if (batch->fileinput) {
-									 n->Click += gcnew System::EventHandler(this, &Form1::my_TextBoxClicked);
-									 //n->BackColor = Color::AntiqueWhite;
-								 }
-								 n->Leave += gcnew System::EventHandler(this, &Form1::my_TextChanged);
-								 n->TextChanged += gcnew System::EventHandler(this, &Form1::my_TextChanged);
-								 n->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
-								 batch->SetValue(batch->guiname, batch->guitext);	
-							 } else {
-								 n->ReadOnly = true;
-								 //n->Top=5;
-							 }
-							 n->Multiline = true;
-							 n->Size = System::Drawing::Size(tab_app[j]->Size.Width*batch->guiwidth-8, batch->guiheight); //sameline
-							 if (tab_app[j]->Size.Width - (n->Size.Width + n->Location.X) > 10) n->Anchor = 
-								 static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | 
-								 System::Windows::Forms::AnchorStyles::Left)));  //sameline
-							 n->TabIndex = 5;
-							 n->Text = gcnew String(batch->guitext);
-							 tab_app[j]->Controls->Add(n);
-						 }
-						 if (com == COM_GUICHECKBOX && tab<0) {
-							 int pos=4 + batch->vdist;
-							 if (tab_app[j]->Controls->Count) {
-								 pos=tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Location.Y + 
-									 tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Height + batch->vdist;
-								 if (batch->sameline) pos=tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Location.Y + batch->vdist;
-							 } //sameline
-							 CheckBox^ n = (gcnew System::Windows::Forms::CheckBox());						
-							 n->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) 
-								 | System::Windows::Forms::AnchorStyles::Right));
-							 n->Location = System::Drawing::Point(4, pos);
-							 if (batch->sameline && tab_app[j]->Controls->Count) {
-								 n->Location = System::Drawing::Point(8+tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Width+
-									 tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Location.X, pos); //sameline
-							 }
-							 n->Name = gcnew String(batch->guiname);
-							 n->Size = System::Drawing::Size(tab_app[j]->Size.Width*batch->guiwidth-8, batch->guiheight); //sameline
-							 if (tab_app[j]->Size.Width - (n->Size.Width + n->Location.X) > 10) n->Anchor = 
-								 static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | 
-								 System::Windows::Forms::AnchorStyles::Left)));  //sameline
-							 n->TabIndex = 5;
-							 n->Text = gcnew String(batch->guitext);
-							 toolTip1->SetToolTip(n, gcnew String(batch->guihelp));
-							 batch->AddFlag(batch->guiname);			 
-							 if (batch->guienabled) {
-								 n->Checked = true;
-								 batch->EnableFlag(batch->guiname);
-							 } else {
-								 batch->DisableFlag(batch->guiname);
-							 }
-							 n->CheckedChanged += gcnew System::EventHandler(this, &Form1::my_CheckedChanged);
-							 tab_app[j]->Controls->Add(n);
-						 }
-						 if (com == COM_GUIDROPDOWN && tab<0) {
-							 int pos=4 + batch->vdist;
-							 if (tab_app[j]->Controls->Count) {
-								 pos=tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Location.Y + 
-									 tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Height + batch->vdist;
-								 if (batch->sameline) pos=tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Location.Y + batch->vdist;
-							 } //sameline
-							 ComboBox^ n = (gcnew System::Windows::Forms::ComboBox());
-							 n->Anchor = static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | System::Windows::Forms::AnchorStyles::Left) 
-								 | System::Windows::Forms::AnchorStyles::Right));
-
-							 n->Location = System::Drawing::Point(4, pos);
-							 if (batch->sameline && tab_app[j]->Controls->Count) {
-								 n->Location = System::Drawing::Point(8+tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Width+
-									 tab_app[j]->Controls[tab_app[j]->Controls->Count-1]->Location.X, pos); //sameline
-							 }
-							 n->Name = gcnew String(batch->guiname);
-							 n->Size = System::Drawing::Size(tab_app[j]->Size.Width*batch->guiwidth-8, batch->guiheight); //sameline
-							 if (tab_app[j]->Size.Width - (n->Size.Width + n->Location.X) > 10) n->Anchor = 
-								 static_cast<System::Windows::Forms::AnchorStyles>(((System::Windows::Forms::AnchorStyles::Top | 
-								 System::Windows::Forms::AnchorStyles::Left)));  //sameline
-							 n->TabIndex = 5;
-							 n->Text = gcnew String(batch->guitext);
-							 toolTip1->SetToolTip(n, gcnew String(batch->guihelp));
-							 batch->AddFlag(batch->guiname);			 
-							 //batch->DisableFlag(batch->guiname);
-							 n->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
-							 n->SelectedIndexChanged += gcnew System::EventHandler(this, &Form1::my_SelectedIndexChanged);
-							 tab_app[j]->Controls->Add(n);
-
-						 }
+						 
+						
+						 
 						 if (com == COM_GUIDROPDOWNITEM && tab<0) {
 							 int pos=4;
 							 //first check for parent
@@ -1200,12 +1246,7 @@ namespace mpgui {
 								 mesg->WriteNextLine(MH_ERROR,"Object [%s] not found in [GUIDisable]",batch->guiname);
 							 }
 						 }
-						 if (com == COM_GUISPLASHECHO) {
-							 mesg->WriteNextLine(MH_ECHO,batch->guitext);
-							 if (batch->myswitch) this->tab->SelectedIndex=0;
-							 Dump();
-						 }
-						 if (com == COM_GUIMESSAGEBOX) {
+						  if (com == COM_GUIMESSAGEBOX) {
 							 MessageBox::Show(gcnew String(batch->guitext),gcnew String(batch->guiname));
 						 }
 						 if (com == COM_GUIWINDOWSIZE) {

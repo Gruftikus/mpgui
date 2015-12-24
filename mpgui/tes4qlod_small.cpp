@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 
 #include "tes4qlod_small.h"
+#include "llguicommands.h"
 
 int cleanup_list_x[1048576];
 int cleanup_list_y[1048576];
@@ -18,12 +19,7 @@ char *wrld_formid[10000];
 char *wrld_mod[10000];
 int wrld_child[10000];
 
-int gamemode;
 
-const char *game[MAX_GAMES];
-const char *plugin[MAX_GAMES];
-const char *pattern[MAX_GAMES];
-const char *std_ws[MAX_GAMES];
 
 char *opt_tes_mode = TES_UNKNOWN;
 int tes_rec_offset = TES4_OB_RECORD_SIZE; 

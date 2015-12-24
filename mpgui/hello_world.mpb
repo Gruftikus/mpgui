@@ -11,7 +11,7 @@ SetFlag -name=hello_doonce -hidden
 
 SetOption -noskipinfo ;avoid nasty skip messanges in loop mode
 
-GUITextBox -text="Select the options" -name=hello_intro -vdist=10 
+;;GUITextBox -text="Select the options" -name=hello_intro -vdist=10 
 
 GUICheckBox -name=hello_option1 -text="Use the resolution" -help="If this is enabled, you can select a resolution" -select
 

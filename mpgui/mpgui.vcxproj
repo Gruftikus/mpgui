@@ -93,9 +93,11 @@
     <ClCompile Include="..\..\lltool\src\llcommands.cpp" />
     <ClCompile Include="..\..\lltool\src\lllogfile.cpp" />
     <ClCompile Include="..\..\lltool\src\lllogger.cpp" />
+    <ClCompile Include="..\..\lltool\src\llsetflag.cpp" />
     <ClCompile Include="..\..\lltool\src\llutils.cpp" />
     <ClCompile Include="..\..\lltool\src\llworker.cpp" />
     <ClCompile Include="info.cpp" />
+    <ClCompile Include="llguicommands.cpp" />
     <ClCompile Include="mpgui.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -108,6 +110,7 @@
     <ClInclude Include="..\..\lltool\include\llcreateworkers.h" />
     <ClInclude Include="..\..\lltool\include\lllogfile.h" />
     <ClInclude Include="..\..\lltool\include\lllogger.h" />
+    <ClInclude Include="..\..\lltool\include\llsetflag.h" />
     <ClInclude Include="..\..\lltool\include\llutils.h" />
     <ClInclude Include="..\..\lltool\include\llworker.h" />
     <ClInclude Include="Form1.h">
@@ -116,6 +119,7 @@
     <ClInclude Include="info.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="llguicommands.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="tes4qlod_small.h" />

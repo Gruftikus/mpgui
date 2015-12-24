@@ -14,19 +14,14 @@
 //#include <unistd.h>
 #include "../../lltool/include/lllogger.h"
 
-#define MAX_GAMES 10
+
 
 int ExportTES4LandT4QLOD(const char *input_esp_filename, llLogger * mesg);
 int Process4WRLDData(char *r, int size);
 int tes4qlod_small(void);
 
 
-extern int gamemode;
 
-extern const char *game[MAX_GAMES];
-extern const char *plugin[MAX_GAMES];
-extern const char *pattern[MAX_GAMES];
-extern const char *std_ws[MAX_GAMES];
 
 extern int cleanup_list_x[1048576];
 extern int cleanup_list_y[1048576];
