@@ -41,7 +41,3 @@ SetGameStdWorldspace -n=6 -value="Commonwealth"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 GUIConsoleEcho -text="Autoload batch file loaded"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-[bla]
-
-GUITextBox -text="Select the options" -name=hello_intro -vdist=10 

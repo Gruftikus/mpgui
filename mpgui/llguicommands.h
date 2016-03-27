@@ -408,4 +408,20 @@ public:
 	virtual int RegisterOptions(void);
 };
 
+/* ----------------------------------- */
+
+class llSetOption : public llWorker {
+
+public:
+
+	llSetOption();
+
+	virtual llWorker * Clone() {
+		return new llSetOption(*this);
+	}
+
+	virtual int RegisterOptions(void);
+};
+
+
 #endif

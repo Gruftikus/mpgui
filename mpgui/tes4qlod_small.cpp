@@ -54,9 +54,8 @@ int tes4qlod_small()
 	    pos = 0;
 
 	char c;		/* For command-line getopts args.  */
-	
 
-	
+
 	/***********************************
 	 * Parse the command line arguments.
 	 **********************************/
@@ -78,7 +77,6 @@ int tes4qlod_small()
 		tes_rec_offset = TES4_FA_SK_RECORD_SIZE;
 	}
 
-
 	/*
 	 * Initialize variables:
 	 */
@@ -88,7 +86,6 @@ int tes4qlod_small()
 	cell.name[0] = '\0';
 	cell.current_x = 0;
 	cell.current_y = 0;
-
 
 	return 0;
 }
@@ -249,10 +246,19 @@ int Process4WRLDData(char *r, int size)
 
 	pos += tes_rec_offset;
 
+
 	/***********************************************
 	 * EDID (name of the Worldspace (6+Name bytes)).
 	 **********************************************/
 	if (strncmp("EDID", r + pos, 4) == 0) {
+
+		wrld_name[wrld_count] = "none";
+		wrld_formid[wrld_count] = new char[8];
+		wrld_description[wrld_count] = "\0";
+		wrld_child[wrld_count]=0;
+		wrld_mod[wrld_count] = new char[strlen(current_esp)+1];
+		strcpy(wrld_mod[wrld_count], current_esp);
+
 		nsize = 0;
 		memcpy(&nsize, r+pos+4, 2);
 		pos += 6;
@@ -261,17 +267,15 @@ int Process4WRLDData(char *r, int size)
 		strncpy(wrld_name[wrld_count], r + pos, nsize);
 		wrld_name[wrld_count][nsize] = '\0';
 
-		wrld_mod[wrld_count] = new char[strlen(current_esp)+1];
-		strcpy(wrld_mod[wrld_count], current_esp);
-
-		pos += nsize;
-		wrld_formid[wrld_count] = new char[8];
+		pos += nsize;		
 
 		sprintf(wrld_formid[wrld_count],"%2.2X%2.2X%2.2X%2.2X", 
 			(unsigned char) (r[15]),
 			(unsigned char) (r[14]),
 			(unsigned char) (r[13]),
 			(unsigned char) (r[12]));
+
+		
 
 		if (strncmp("FULL", r + pos , 4) == 0) {
 			nsize2 = 0;
@@ -282,11 +286,8 @@ int Process4WRLDData(char *r, int size)
 			strncpy(wrld_description[wrld_count], r + pos, nsize2);
 			wrld_description[wrld_count][nsize2] = '\0';
 			pos += nsize2;
-		} else {
-			wrld_description[wrld_count] = "\0";
-		}
-
-		wrld_child[wrld_count]=0;
+		} 
+	
 
 		if (strncmp("WNAM", r + pos , 4) == 0) {
 			wrld_child[wrld_count]=1;
@@ -295,6 +296,7 @@ int Process4WRLDData(char *r, int size)
 			pos += 6;
 			pos += nsize3;
 		} 
+
 
 		//check if wrld is already there...
 		int p=0;

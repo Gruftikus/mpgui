@@ -75,6 +75,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_D2EDA694D6DA4CD69405D4DCE0500A4A"
+        "OwnerKey" = "8:_50B2D2928D7147E5961B0DEA2BCD4A7D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_D30916DB788C42459E0BACFDA2AFB961"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -781,15 +787,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:MPGUI"
-        "ProductCode" = "8:{859A0578-D1B9-41FC-863C-636140BF0089}"
-        "PackageCode" = "8:{8CAC6581-84CC-4701-923D-815D9BD8A577}"
+        "ProductCode" = "8:{25B22D8C-4F3E-4C7F-B239-B0370DA1224A}"
+        "PackageCode" = "8:{81C1F130-C0A2-404A-95C9-ECF6401FB163}"
         "UpgradeCode" = "8:{4A048579-9AFB-469E-90B0-B184F71810D9}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.22"
+        "ProductVersion" = "8:1.99"
         "Manufacturer" = "8:Gruftikus"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -1460,12 +1466,26 @@
         }
         "MergeModule"
         {
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_D2EDA694D6DA4CD69405D4DCE0500A4A"
+            {
+            "UseDynamicProperties" = "11:TRUE"
+            "IsDependency" = "11:TRUE"
+            "SourcePath" = "8:Microsoft_VC100_DebugCRT_x86.msm"
+                "Properties"
+                {
+                }
+            "LanguageId" = "3:0"
+            "Exclude" = "11:FALSE"
+            "Folder" = "8:"
+            "Feature" = "8:"
+            "IsolateTo" = "8:"
+            }
         }
         "ProjectOutput"
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_50B2D2928D7147E5961B0DEA2BCD4A7D"
             {
-            "SourcePath" = "8:..\\Release\\mpgui.exe"
+            "SourcePath" = "8:..\\Debug\\mpgui.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_5B3D51D947454411B2217E7128A65D3D"

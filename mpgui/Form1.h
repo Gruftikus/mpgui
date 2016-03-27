@@ -83,7 +83,7 @@ namespace mpgui {
 			batch->RegisterWorker(new llGUIMessageBox());
 			batch->RegisterWorker(new llGUIRequestVersion());
 			batch->RegisterWorker(new llSetPath());
-
+			batch->RegisterWorker(new llSetOption());
 
 			textBox1->AppendText("This is Gruftikus' Multi Purpose GUI. Hello!" + Environment::NewLine );
 
@@ -167,21 +167,21 @@ namespace mpgui {
 
 			if (System::IO::File::Exists(auto1)) {
 				if (batch->Open("mpgui_autoload.mpb", "[_autoload]")) {
-					batch->ReadCache();
+					batch->ReadCache(1);
 					batch->CompileScript();
 					textBox1->AppendText("Configuration loaded from working directory" + Environment::NewLine );
 					update_all_tabs(-1, "[_autoload]");
 				}
 			} else if (System::IO::File::Exists(auto2)) {
 				if (batch->Open("ini\\mpgui_autoload.mpb", "[_autoload]")) {
-					batch->ReadCache();
+					batch->ReadCache(1);
 					batch->CompileScript();
 					textBox1->AppendText("Configuration loaded from \\INI directory" + Environment::NewLine );
 					update_all_tabs(-1, "[_autoload]");
 				}
 			} else if (System::IO::File::Exists(auto3)) {
 				if (batch->Open("ini\\mpgui\\mpgui_autoload.mpb", "[_autoload]")) {
-					batch->ReadCache();
+					batch->ReadCache(1);
 					batch->CompileScript();
 					textBox1->AppendText("Configuration loaded from \\INI\\MPGUI directory" + Environment::NewLine );
 					update_all_tabs(-1, "[_autoload]");
@@ -191,7 +191,7 @@ namespace mpgui {
 				char *tmp2 = new char[strlen(cxt.marshal_as<const char*>(auto4))+1];
 				strcpy_s(tmp2,strlen(cxt.marshal_as<const char*>(auto4))+1,cxt.marshal_as<const char*>(auto4));
 				if (batch->Open(tmp2, "[_autoload]")) {
-					batch->ReadCache();
+					batch->ReadCache(1);
 					batch->CompileScript();
 					textBox1->AppendText("Configuration loaded from install directory" + Environment::NewLine );
 					update_all_tabs(-1, "[_autoload]");
@@ -665,8 +665,8 @@ namespace mpgui {
 				batch->Open(bla, "[_gamemode]"); 
 				//batch->Open( (char*)(void*)Marshal::StringToHGlobalAnsi(file), "[_gamemode]");
 				mesg->WriteNextLine(LOG_INFO, "Open '%s'", cxt.marshal_as<char const*>(file)); //geht alleine
-				batch->ReadCache();
-				batch->CompileScript();
+				batch->ReadCache(1);
+				//batch->CompileScript();
 				update_all_tabs(-1, "[_gamemode]");
 				int com;
 
@@ -889,8 +889,14 @@ namespace mpgui {
 				 is_in_update = 1;
 				 this->SuspendLayout();
 				 msclr::interop::marshal_context cxt; 
-				 //mesg->WriteNextLine(LOG_INFO, "sec %s", sec);
-				 //Dump();
+				 //mesg->WriteNextLine(LOG_INFO, "**** sec %s", sec);
+				 Dump();
+
+				 //compile section, if not yet done
+				 if (sec) {
+					 batch->OpenSection(sec);
+					 batch->CompileScript(0);
+				 }
 
 				 for (int j=start; j<tab_app->Length; j++) {
 					 //mesg->WriteNextLine(LOG_INFO, "j %i", j);
@@ -902,8 +908,9 @@ namespace mpgui {
 							 sprintf(tmp, "%s", sec);
 					 } else 
 						 sprintf(tmp, "[%s]", cxt.marshal_as<char const*>(tab_app[j]->Name));
-					 //mesg->WriteNextLine(LOG_INFO, "tmp %s", tmp);
+					 //mesg->WriteNextLine(LOG_INFO, "update tab %s", tmp);
 					 batch->OpenSection(tmp);
+					 batch->CompileScript(0);
 					 Dump();
 
 					 int com;
@@ -1540,6 +1547,7 @@ namespace mpgui {
 				 }
 
 				 update_ws_values(comboBox1);
+
 				 tab_ws->Enabled = true;
 			 }			 
 

@@ -522,6 +522,7 @@ int llGUIMessageBox::RegisterOptions(void) {
 
 	RegisterValue("-text",  &guitext, LLWORKER_OBL_OPTION);
 	RegisterValue("-title", &guiname, LLWORKER_OBL_OPTION);
+	RegisterValue("-name",  &guiname, LLWORKER_OBL_OPTION);
 
 	return 1;
 }
@@ -557,3 +558,17 @@ int llGUIRequestVersion::RegisterOptions(void) {
 	return 1;
 }
 
+/* ----------------------------------- */
+
+llSetOption::llSetOption() : llWorker() {
+	SetCommandName(COM_SETOPTION_CMD);
+	SetFixedIndex(COM_SETOPTION);
+}
+
+int llSetOption::RegisterOptions(void) {
+	if (!llWorker::RegisterOptions()) return 0;
+
+	RegisterFlag("-noskipinfo", &myswitch);
+
+	return 1;
+}
