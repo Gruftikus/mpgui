@@ -119,6 +119,7 @@ namespace mpgui {
 			backgroundWorker3->WorkerSupportsCancellation = true;
 
 			this->gameModeToolStripMenuItem->Enabled = false;
+			this->loadOrderToolStripMenuItem->Enabled = false;
 
 			using namespace System;
 			using namespace Microsoft::Win32;
@@ -276,7 +277,10 @@ namespace mpgui {
 	private: System::Windows::Forms::Button^  button1;
 	private: System::Windows::Forms::ToolStripMenuItem^  optionsToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  gameModeToolStripMenuItem;
-
+	private: System::Windows::Forms::ToolStripMenuItem^  loadOrderToolStripMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^  loadOrderTimeToolStripMenuItem;
+    private: System::Windows::Forms::ToolStripMenuItem^  loadOrderTxtToolStripMenuItem;
+	
 	private: System::ComponentModel::IContainer^  components;
 
 	private:
@@ -302,6 +306,9 @@ namespace mpgui {
 			this->exitToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->optionsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->gameModeToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->loadOrderToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->loadOrderTimeToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->loadOrderTxtToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->helpToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->aboutToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->userReadmeToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -376,7 +383,8 @@ namespace mpgui {
 			// 
 			// optionsToolStripMenuItem
 			// 
-			this->optionsToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->gameModeToolStripMenuItem});
+			this->optionsToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {this->gameModeToolStripMenuItem,
+				this->loadOrderToolStripMenuItem});
 			this->optionsToolStripMenuItem->Name = L"optionsToolStripMenuItem";
 			this->optionsToolStripMenuItem->Size = System::Drawing::Size(61, 20);
 			this->optionsToolStripMenuItem->Text = L"&Options";
@@ -386,6 +394,24 @@ namespace mpgui {
 			this->gameModeToolStripMenuItem->Name = L"gameModeToolStripMenuItem";
 			this->gameModeToolStripMenuItem->Size = System::Drawing::Size(152, 22);
 			this->gameModeToolStripMenuItem->Text = L"&Game mode";
+			// 
+			// loadOrderToolStripMenuItem
+			// 
+			this->loadOrderToolStripMenuItem->Name = L"loadOrderToolStripMenuItem";
+			this->loadOrderToolStripMenuItem->Size = System::Drawing::Size(152, 22);
+			this->loadOrderToolStripMenuItem->Text = L"&Load order";
+
+			//submenue
+			this->loadOrderToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {this->loadOrderTimeToolStripMenuItem,
+				this->loadOrderTxtToolStripMenuItem});
+			this->loadOrderTimeToolStripMenuItem->Name = L"loadOrderTimeToolStripMenuItem";
+			this->loadOrderTimeToolStripMenuItem->Size = System::Drawing::Size(152, 22);
+			this->loadOrderTimeToolStripMenuItem->Text = L"&By time stamp";
+			this->loadOrderTxtToolStripMenuItem->Name = L"loadOrderTxtToolStripMenuItem";
+			this->loadOrderTxtToolStripMenuItem->Size = System::Drawing::Size(152, 22);
+			this->loadOrderTxtToolStripMenuItem->Text = L"&By plugins/loadorder file";
+
+
 			// 
 			// helpToolStripMenuItem
 			// 
@@ -668,7 +694,6 @@ namespace mpgui {
 				batch->ReadCache(1);
 				//batch->CompileScript();
 				update_all_tabs(-1, "[_gamemode]");
-				int com;
 
 				Dump();
 				if (!gamemode) {
@@ -762,6 +787,7 @@ namespace mpgui {
 							dummy->Click += gcnew System::EventHandler(this, &Form1::gameModeMenu_Click);
 							this->gameModeToolStripMenuItem->DropDownItems->Add(dummy);
 							this->gameModeToolStripMenuItem->Enabled = true;
+							this->loadOrderToolStripMenuItem->Enabled = true;
 						}
 					}
 					if (gamemode) {
@@ -1478,30 +1504,25 @@ namespace mpgui {
 
 
 	private: System::Void button_readws_Click(System::Object ^sender, System::EventArgs ^e) {
+				 while (backgroundWorker3->IsBusy);
 				 tab_ws->Enabled = false;
+				 //Fill the mod list
+				 input_count = checkedListBox1->CheckedItems->Count;
+				 msclr::interop::marshal_context cxt; 
+				 for (int i=0; i<checkedListBox1->CheckedItems->Count; i++) {
+					 input_filename[i] = 
+						 _llUtils()->NewString(cxt.marshal_as<char const*>(checkedListBox1->GetItemText(checkedListBox1->CheckedItems[i])));
+				 }
+				 tes4qlod_small();
 				 backgroundWorker3->RunWorkerAsync(0);
 			 }
 
 	public: void backgroundWorker3_DoWork(Object ^sender, DoWorkEventArgs ^e) {
 				BackgroundWorker ^worker = dynamic_cast<BackgroundWorker^>(sender);
 				worker->ReportProgress(0);
-				//Fill the mod list
-				int input_count = checkedListBox1->CheckedItems->Count;
-				msclr::interop::marshal_context cxt; 
-				for (int i=0; i<checkedListBox1->CheckedItems->Count; i++) {
-					input_filename[i] = 
-						cxt.marshal_as<char const*>(checkedListBox1->GetItemText(checkedListBox1->CheckedItems[i]));
-				}
-				worker->ReportProgress(1);
-				tes4qlod_small();
 				for (int i=0; i<input_count; i++) {
-					//progressBar1->PerformStep();
-					worker->ReportProgress( ((i+1)*100)/input_count , gcnew String(L"Open ") + gcnew String(input_filename[i]));
-					//worker->ReportProgress( 0.5 );
-					//mesg->WriteNextLine(MH_INFO,"Open %s ",input_filename[i]);
-					ExportTES4LandT4QLOD(input_filename[i], mesg);
+					worker->ReportProgress(i+1);
 				}			
-				worker->ReportProgress(100);
 			}
 
 	private: void backgroundWorker3_RunWorkerCompleted(Object ^/*sender*/, RunWorkerCompletedEventArgs ^e) {
@@ -1516,8 +1537,6 @@ namespace mpgui {
 
 				 //Read the wordspaces
 				 comboBox1->Items->Clear();
-
-				 //textBox1->AppendText(ws_primary);
 
 				 comboBox1->BeginUpdate();
 				 for (int i=0; i<wrld_count; i++) {				 
@@ -1547,13 +1566,18 @@ namespace mpgui {
 				 }
 
 				 update_ws_values(comboBox1);
+				 textBox2->AppendText(Environment::NewLine);
 
 				 tab_ws->Enabled = true;
 			 }			 
 
 	private: void backgroundWorker3_ProgressChanged(Object ^ /*sender*/, ProgressChangedEventArgs ^e ) {
-				 this->progressBar1->Value = e->ProgressPercentage;
-				 textBox2->AppendText((String^)e->UserState + Environment::NewLine );
+				 this->progressBar1->Value = ((e->ProgressPercentage)*100)/input_count;
+				 if (e->ProgressPercentage) {
+					 int i = e->ProgressPercentage-1;
+					 textBox2->AppendText((String^)gcnew String(L"Open ") + gcnew String(input_filename[i]) + Environment::NewLine);
+					 ExportTES4LandT4QLOD(input_filename[i], mesg);
+				 }
 			 }
 
 	private: void set_enables(void) {
@@ -1668,18 +1692,18 @@ namespace mpgui {
 				 _llUtils()->DisableFlag("_worldspace");
 				 _llUtils()->DisableFlag("_worldspaceid");
 				 _llUtils()->DisableFlag("_worldspaceidhex");
+	 
 				 if (idx>=0) {
 					 msclr::interop::marshal_context cxt; 
-					 const char *name = cxt.marshal_as<char const*>(((ComboBox^)sender)->SelectedItem->ToString());
+					 const char *name = cxt.marshal_as<char const*>(((ComboBox^)sender)->SelectedItem->ToString()); 
 					 mesg->WriteNextLine(LOG_DEBUG, "Selected [%s] from WS", name);
 					 Dump();
 
-					 char *tmp = new char[1000];
-					 strcpy_s(tmp, 1000, name);
+					 char *tmp = _llUtils()->NewString(name);
 					 for (unsigned int i=0; i<strlen(tmp); i++) {
 						 if (tmp[i] == ' ') {
 							 tmp[i] ='\0';
-							 worldspace = tmp;
+							 worldspace = _llUtils()->NewString(tmp);
 							 _llUtils()->EnableFlag("_worldspace");
 							 _llUtils()->SetValue("_worldspace", worldspace);
 

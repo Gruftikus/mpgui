@@ -45,7 +45,6 @@ int tes_rec_offset = TES4_OB_RECORD_SIZE;
 
 int tes4qlod_small()
 {
-	int i;
 	wrld_count =0;
 
 	int in_group = 0,   /* Are we in a GRUP record group or not? */
@@ -54,7 +53,6 @@ int tes4qlod_small()
 	    pos = 0;
 
 	char c;		/* For command-line getopts args.  */
-
 
 	/***********************************
 	 * Parse the command line arguments.
