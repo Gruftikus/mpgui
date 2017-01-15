@@ -7,6 +7,8 @@
 int gamemode = 0;
 const char *game[MAX_GAMES];
 const char *plugin[MAX_GAMES];
+const char *loadorder[MAX_GAMES];
+int         use_loadorder[MAX_GAMES];
 const char *pattern[MAX_GAMES];
 const char *std_ws[MAX_GAMES];
 
@@ -94,6 +96,7 @@ int llAddGame::Exec(void) {
 		return 0;
 	}
 	game[n] = name;
+	use_loadorder[n] = 0;
 
 	return 1;
 }
@@ -129,6 +132,44 @@ int llSetGamePluginFile::Exec(void) {
 			return 0;
 		}
 		plugin[n] = name;
+	}
+
+	return 1;
+}
+
+/* ----------------------------------- */
+
+llSetGameLoadorderFile::llSetGameLoadorderFile() : llWorker() {
+	SetCommandName(COM_SETGAMELOADORDERFILE_CMD);
+	SetFixedIndex(COM_SETGAMELOADORDERFILE);
+
+	n = -1;
+}
+
+int llSetGameLoadorderFile::RegisterOptions(void) {
+	if (!llWorker::RegisterOptions()) return 0;
+
+	RegisterValue("-n",     &n);
+	RegisterValue("-value", &name, LLWORKER_OBL_OPTION);
+
+	return 1;
+}
+
+int llSetGameLoadorderFile::Exec(void) {
+	llWorker::Exec();
+
+	if (n<0 && !gamemode) {
+		_llLogger()->WriteNextLine(LOG_ERROR, "Game number (-n) not set");
+	} else if (n<0 && gamemode) {
+		loadorder[gamemode] = name;
+		use_loadorder[gamemode] = 1;
+	} else {
+		if (n > MAX_GAMES) {
+			_llLogger()->WriteNextLine(LOG_ERROR, "Too many games");
+			return 0;
+		}
+		loadorder[n] = name;
+		use_loadorder[n] = 1;
 	}
 
 	return 1;

@@ -28,6 +28,7 @@ SetGameStdWorldspace -n=4 -value="WastelandNV"
 
 AddGame              -n=5 -name=Skyrim
 SetGamePluginFile    -n=5 -value="$_appdata\Skyrim\plugins.txt"
+SetGameLoadorderFile -n=5 -value="$_appdata\Skyrim\loadorder.txt"
 SetGameSearchPattern -n=5 -value="skyrim"
 SetGameStdWorldspace -n=5 -value="Tamriel"
 

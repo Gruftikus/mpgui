@@ -48,6 +48,8 @@
 #define COM_SETPATH_CMD				"SetPath"
 #define COM_GAMEMODE				69
 #define COM_GAMEMODE_CMD			"GameMode"
+#define COM_SETGAMELOADORDERFILE	72
+#define COM_SETGAMELOADORDERFILE_CMD	"SetGameLoadorderFile"
 
 #define COM_LOGFILE					70
 #define COM_SETFLAG					71
@@ -59,6 +61,8 @@ extern int gamemode;
 #define            MAX_GAMES           10
 extern const char *game[MAX_GAMES];
 extern const char *plugin[MAX_GAMES];
+extern const char *loadorder[MAX_GAMES];
+extern int use_loadorder[MAX_GAMES];
 extern const char *pattern[MAX_GAMES];
 extern const char *std_ws[MAX_GAMES];
 
@@ -142,6 +146,28 @@ public:
 
 	virtual llWorker * Clone() {
 		return new llSetGamePluginFile(*this);
+	}
+
+	virtual int RegisterOptions(void);
+	virtual int Exec(void);
+
+};
+
+/* ----------------------------------- */
+
+class llSetGameLoadorderFile : public llWorker {
+
+protected:
+
+	int   n;
+	char *name;
+
+public:
+
+	llSetGameLoadorderFile();
+
+	virtual llWorker * Clone() {
+		return new llSetGameLoadorderFile(*this);
 	}
 
 	virtual int RegisterOptions(void);

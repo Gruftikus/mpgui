@@ -44,6 +44,7 @@ namespace mpgui {
 
 			myBatchStream = nullptr;
 			s_listname = nullptr;
+			l_listname = nullptr;
 			ws_primary = nullptr;
 			searchdir  = gcnew String(Directory::GetCurrentDirectory());
 			is_in_update =  0;
@@ -68,6 +69,7 @@ namespace mpgui {
 			batch->RegisterWorker(new llGameMode());
 			batch->RegisterWorker(new llAddGame());
 			batch->RegisterWorker(new llSetGamePluginFile());
+			batch->RegisterWorker(new llSetGameLoadorderFile());
 			batch->RegisterWorker(new llSetGameStdWorldspace());
 			batch->RegisterWorker(new llSetGameSearchPattern());
 			batch->RegisterWorker(new llGUIConsoleEcho());
@@ -233,6 +235,7 @@ namespace mpgui {
 		llCommands *batch;
 		llLogger *mesg;
 		String ^s_listname;
+		String ^l_listname;
 		String ^ws_primary;
 		String ^searchdir;
 		String ^installdir;
@@ -407,9 +410,11 @@ namespace mpgui {
 			this->loadOrderTimeToolStripMenuItem->Name = L"loadOrderTimeToolStripMenuItem";
 			this->loadOrderTimeToolStripMenuItem->Size = System::Drawing::Size(152, 22);
 			this->loadOrderTimeToolStripMenuItem->Text = L"&By time stamp";
+			this->loadOrderTimeToolStripMenuItem->Click += gcnew System::EventHandler(this, &Form1::loadOrderTime_Click);
 			this->loadOrderTxtToolStripMenuItem->Name = L"loadOrderTxtToolStripMenuItem";
 			this->loadOrderTxtToolStripMenuItem->Size = System::Drawing::Size(152, 22);
 			this->loadOrderTxtToolStripMenuItem->Text = L"&By plugins/loadorder file";
+			this->loadOrderTxtToolStripMenuItem->Click += gcnew System::EventHandler(this, &Form1::loadOrderFile_Click);
 
 
 			// 
@@ -729,6 +734,7 @@ namespace mpgui {
 				update_all_tabs(-1, "[MPGUI]");
 				
 				//Fill Plugin list (only ONCE!)
+				update_loadorder();
 
 				if (!plugins_done) {
 					plugins_done = 1;
@@ -815,10 +821,32 @@ namespace mpgui {
 						 _llUtils()->SetHidden("_gamemode");
 					 }
 				 }
+				 update_loadorder();
 				 update_game_menu();
 				 update_game_path();
 				 FillPlugins();
 			 }
+
+    private: System::Void loadOrderTime_Click(System::Object ^sender, System::EventArgs ^e) {
+				 use_loadorder[gamemode] = 0;
+				 update_loadorder();
+				 FillPlugins();
+			 }
+
+    private: System::Void loadOrderFile_Click(System::Object ^sender, System::EventArgs ^e) {
+				 use_loadorder[gamemode] = 1;
+				 update_loadorder();
+				 FillPlugins();
+			 }
+
+    public: System::Void update_loadorder(System::Void) {
+				 this->loadOrderTxtToolStripMenuItem->Checked = false;
+				 this->loadOrderTimeToolStripMenuItem->Checked = false;
+				 if (use_loadorder[gamemode])
+					 this->loadOrderTxtToolStripMenuItem->Checked = true;
+				 else
+					 this->loadOrderTimeToolStripMenuItem->Checked = true;
+			}
 
 	public: System::Void FillPlugins(System::Void) {
 				checkedListBox1->Items->Clear();
@@ -836,6 +864,26 @@ namespace mpgui {
 						button_std->Enabled = false;
 					}
 					Dump();
+				}
+
+				if (use_loadorder[gamemode]) {
+					mesg->WriteNextLine(LOG_INFO, "Using Loadorder.txt");
+					if (!loadorder[gamemode]) {
+						mesg->WriteNextLine(LOG_WARNING, "Loadorder.txt not set");
+						use_loadorder[gamemode] = 0;
+					} else {
+						l_listname = gcnew String(loadorder[gamemode]);
+						if (!System::IO::File::Exists(l_listname)) {
+							if (s_listname) {
+								mesg->WriteNextLine(LOG_WARNING, "Loadorder.txt file not existing, use Plugins.txt as a fallback");
+								l_listname = s_listname;
+							} else {
+								mesg->WriteNextLine(LOG_WARNING, "Plugins.txt file not existing, getting loadorder not possible");
+								use_loadorder[gamemode] = 0;
+							}
+						}
+						Dump();
+					}
 				}
 
 				msclr::interop::marshal_context cxt; 
@@ -857,7 +905,7 @@ namespace mpgui {
 				for (int i=0; i<dirs1->Length; i++) {
 					file1[i] = gcnew FileInfo(dirs1[i]);
 					if (!file1[i]) {
-						mesg->WriteNextLine(LOG_FATAL, "The esp '%s' was not found", dirs1[i]);
+						mesg->WriteNextLine(LOG_FATAL, "The esp '%s' was not found",  cxt.marshal_as<char const*>(dirs1[i]));
 						Dump();
 					}
 				}
@@ -874,6 +922,45 @@ namespace mpgui {
 							dirs1[j]   = tmp;
 						}
 					}
+				}
+
+				if (use_loadorder[gamemode]) {
+					array<Int32> ^index = gcnew array<Int32>(dirs1->Length);
+					for (int i=0; i<dirs1->Length; i++) {
+						index[i] = 9999;
+					}
+					//fill index numbers with position from loadorder
+					StreamReader ^din = File::OpenText(l_listname);
+					String ^str;
+					int count = 0;
+					while ((str=din->ReadLine()) != nullptr)  {
+						//mesg->WriteNextLine(LOG_INFO, "Open '%s'", cxt.marshal_as<char const*>(str));
+						for (int i=0; i<dirs1->Length; i++) {
+							if (str->Equals(System::IO::Path::GetFileName(dirs1[i]), System::StringComparison::CurrentCultureIgnoreCase)) {
+								index[i] = count;
+								mesg->WriteNextLine(LOG_INFO, "Setting '%s' to %i", cxt.marshal_as<char const*>(dirs1[i]), count);
+							}
+						}
+						count++;
+					}
+
+					//Sort to index number
+					for (int i=0; i<dirs1->Length; i++) {  //quicksort
+						for (int j=i; j>0; j--) {  //quicksort
+							if (index[j-1] > index[j]) {
+								FileInfo ^ttmp = file1[j-1];
+								String   ^tmp  = dirs1[j-1];
+								Int32     itmp = index[j-1];
+								file1[j-1] = file1[j];
+								dirs1[j-1] = dirs1[j];
+								index[j-1] = index[j];
+								file1[j]   = ttmp;
+								dirs1[j]   = tmp;
+								index[j]   = itmp;
+							}
+						}
+					}
+					Dump();
 				}
 
 				for (int i=0; i<dirs1->Length; i++) {
@@ -1521,8 +1608,11 @@ namespace mpgui {
 				BackgroundWorker ^worker = dynamic_cast<BackgroundWorker^>(sender);
 				worker->ReportProgress(0);
 				for (int i=0; i<input_count; i++) {
-					worker->ReportProgress(i+1);
-				}			
+					worker->ReportProgress( ((i+1)*100)/input_count, gcnew String(L"Open ") + gcnew String(input_filename[i]));
+					ExportTES4LandT4QLOD(input_filename[i], mesg);
+					//worker->ReportProgress(i+1);
+				}	
+				worker->ReportProgress(100);
 			}
 
 	private: void backgroundWorker3_RunWorkerCompleted(Object ^/*sender*/, RunWorkerCompletedEventArgs ^e) {
@@ -1572,12 +1662,14 @@ namespace mpgui {
 			 }			 
 
 	private: void backgroundWorker3_ProgressChanged(Object ^ /*sender*/, ProgressChangedEventArgs ^e ) {
-				 this->progressBar1->Value = ((e->ProgressPercentage)*100)/input_count;
-				 if (e->ProgressPercentage) {
-					 int i = e->ProgressPercentage-1;
-					 textBox2->AppendText((String^)gcnew String(L"Open ") + gcnew String(input_filename[i]) + Environment::NewLine);
-					 ExportTES4LandT4QLOD(input_filename[i], mesg);
-				 }
+				 //this->progressBar1->Value = ((e->ProgressPercentage)*100)/input_count;
+				 //if (e->ProgressPercentage) {
+				//	 int i = e->ProgressPercentage-1;
+				//	 textBox2->AppendText((String^)gcnew String(L"Open ") + gcnew String(input_filename[i]) + Environment::NewLine);
+				//	 ExportTES4LandT4QLOD(input_filename[i], mesg);
+				 //}
+				 this->progressBar1->Value = e->ProgressPercentage;
+				 textBox2->AppendText((String^)e->UserState + Environment::NewLine );
 			 }
 
 	private: void set_enables(void) {
