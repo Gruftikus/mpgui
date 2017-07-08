@@ -120,6 +120,8 @@ namespace mpgui {
 			backgroundWorker3->WorkerReportsProgress = true;
 			backgroundWorker3->WorkerSupportsCancellation = true;
 
+			folderBrowserDialog1 = gcnew FolderBrowserDialog;
+
 			this->gameModeToolStripMenuItem->Enabled = false;
 			this->loadOrderToolStripMenuItem->Enabled = false;
 
@@ -283,7 +285,10 @@ namespace mpgui {
 	private: System::Windows::Forms::ToolStripMenuItem^  loadOrderToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  loadOrderTimeToolStripMenuItem;
     private: System::Windows::Forms::ToolStripMenuItem^  loadOrderTxtToolStripMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^  gameDirToolStripMenuItem;
 	
+	private: FolderBrowserDialog^ folderBrowserDialog1;
+
 	private: System::ComponentModel::IContainer^  components;
 
 	private:
@@ -312,6 +317,7 @@ namespace mpgui {
 			this->loadOrderToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->loadOrderTimeToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->loadOrderTxtToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->gameDirToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->helpToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->aboutToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->userReadmeToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -386,8 +392,8 @@ namespace mpgui {
 			// 
 			// optionsToolStripMenuItem
 			// 
-			this->optionsToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {this->gameModeToolStripMenuItem,
-				this->loadOrderToolStripMenuItem});
+			this->optionsToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(3) {this->gameModeToolStripMenuItem,
+				this->loadOrderToolStripMenuItem, this->gameDirToolStripMenuItem});
 			this->optionsToolStripMenuItem->Name = L"optionsToolStripMenuItem";
 			this->optionsToolStripMenuItem->Size = System::Drawing::Size(61, 20);
 			this->optionsToolStripMenuItem->Text = L"&Options";
@@ -403,6 +409,13 @@ namespace mpgui {
 			this->loadOrderToolStripMenuItem->Name = L"loadOrderToolStripMenuItem";
 			this->loadOrderToolStripMenuItem->Size = System::Drawing::Size(152, 22);
 			this->loadOrderToolStripMenuItem->Text = L"&Load order";
+			//
+			// Select custom gamedir
+			//
+			this->gameDirToolStripMenuItem->Name = L"gameDirToolStripMenuItem";
+			this->gameDirToolStripMenuItem->Size = System::Drawing::Size(152, 22);
+			this->gameDirToolStripMenuItem->Text = L"&Custom game directory";
+			this->gameDirToolStripMenuItem->Click += gcnew System::EventHandler(this, &Form1::gameDirToolStripMenuItem_Click);
 
 			//submenue
 			this->loadOrderToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {this->loadOrderTimeToolStripMenuItem,
@@ -753,6 +766,25 @@ namespace mpgui {
 				update_game_menu();
 			}			
 
+
+    //********************************************** Game dir
+	private: System::Void gameDirToolStripMenuItem_Click(System::Object ^sender, System::EventArgs ^e) {
+				 this->folderBrowserDialog1->RootFolder = Environment::SpecialFolder::Desktop;
+				 if (_llUtils()->GetValue("_gamedir"))
+					 this->folderBrowserDialog1->SelectedPath = gcnew String(_llUtils()->GetValue("_gamedir"));
+				 else
+					 this->folderBrowserDialog1->SelectedPath = Directory::GetCurrentDirectory();
+				 System::Windows::Forms::DialogResult result = folderBrowserDialog1->ShowDialog();
+				 if (result == System::Windows::Forms::DialogResult::OK) {
+					 msclr::interop::marshal_context cxt; 
+					 char *tmp2 = _llUtils()->NewString(cxt.marshal_as<const char*>(folderBrowserDialog1->SelectedPath));
+					 _llUtils()->SetValue("_gamedir", tmp2);	
+					 mesg->WriteNextLine(LOG_INFO, 
+						"Using '%s' as the game directory", _llUtils()->GetValue("_gamedir"));
+					 update_game_path();
+					 FillPlugins();				 
+				 }
+			 }
 
 	public: System::Void update_game_path(System::Void) {
 				using namespace Microsoft::Win32;

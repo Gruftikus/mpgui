@@ -32,11 +32,17 @@ SetGameLoadorderFile -n=5 -value="$_appdata\Skyrim\loadorder.txt"
 SetGameSearchPattern -n=5 -value="skyrim"
 SetGameStdWorldspace -n=5 -value="Tamriel"
 
-AddGame              -n=6 -name=Fallout4
-SetGamePluginFile    -n=6 -value="$_appdata\Fallout4\plugins.txt"
-SetGameLoadorderFile -n=6 -value="$_appdata\Fallout4\loadorder.txt"
-SetGameSearchPattern -n=6 -value="Fallout 4"
-SetGameStdWorldspace -n=6 -value="Commonwealth"
+AddGame              -n=6 -name="Skyrim Special Edition"
+SetGamePluginFile    -n=6 -value="$_appdata\Skyrim Special Edition\plugins.txt"
+SetGameLoadorderFile -n=6 -value="$_appdata\Skyrim Special Edition\loadorder.txt"
+SetGameSearchPattern -n=6 -value="skyrim special edition"
+SetGameStdWorldspace -n=6 -value="Tamriel"
+
+AddGame              -n=7 -name=Fallout4
+SetGamePluginFile    -n=7 -value="$_appdata\Fallout4\plugins.txt"
+SetGameLoadorderFile -n=7 -value="$_appdata\Fallout4\loadorder.txt"
+SetGameSearchPattern -n=7 -value="Fallout 4"
+SetGameStdWorldspace -n=7 -value="Commonwealth"
 
 ;SetPath                   -value="$_workdir\ini\mpgui\"
 
