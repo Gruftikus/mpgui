@@ -15,25 +15,7 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_03CDECBAA85749BE81581CD08F0132E1"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_0790565480A44D2285CDB5AE6DA7B859"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_20CBCF0E55FB415BA15F5C7F06FCC1C3"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_4C0FDF29F63D4FB297D27CF89D7A0AC5"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -51,19 +33,13 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_700B3C6DC81E4198B5D82A131AA10D8D"
-        "OwnerKey" = "8:_UNDEFINED"
+        "MsmKey" = "8:_8AFEFE21AF6044038DAD0820DD95B2B5"
+        "OwnerKey" = "8:_50B2D2928D7147E5961B0DEA2BCD4A7D"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_9095FD90AFBC49E8BCE6E4DEF6DE81B1"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_9D8E8A267ABA4BD18D20042C9FD10BE0"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -75,12 +51,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_D2EDA694D6DA4CD69405D4DCE0500A4A"
-        "OwnerKey" = "8:_50B2D2928D7147E5961B0DEA2BCD4A7D"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_D30916DB788C42459E0BACFDA2AFB961"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -88,12 +58,6 @@
         "Entry"
         {
         "MsmKey" = "8:_DF3DE613DFD24FF2B3A87713491C0F4C"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_EFA3EDFB0CC24E078B1E6CE3A31AAEB7"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -214,26 +178,6 @@
         }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_03CDECBAA85749BE81581CD08F0132E1"
-            {
-            "SourcePath" = "8:..\\mpgui\\tesannwyn.mpb"
-            "TargetName" = "8:tesannwyn.mpb"
-            "Tag" = "8:"
-            "Folder" = "8:_108DC736B6734026971978CE6C59B08D"
-            "Condition" = "8:CHECKBOXA1 and REGISTRYFALLOUT3"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:FALSE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0790565480A44D2285CDB5AE6DA7B859"
             {
             "SourcePath" = "8:..\\mpgui\\tes4qlod.mpb"
@@ -241,46 +185,6 @@
             "Tag" = "8:"
             "Folder" = "8:_C059532B675B48CC97E2F218EB7FF29B"
             "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_20CBCF0E55FB415BA15F5C7F06FCC1C3"
-            {
-            "SourcePath" = "8:..\\mpgui\\tesannwyn.mpb"
-            "TargetName" = "8:tesannwyn.mpb"
-            "Tag" = "8:"
-            "Folder" = "8:_AEB3168076FD463E89DCE518B83F6C31"
-            "Condition" = "8:CHECKBOXA1 and REGISTRYMORROWIND"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4C0FDF29F63D4FB297D27CF89D7A0AC5"
-            {
-            "SourcePath" = "8:..\\mpgui\\tesannwyn.mpb"
-            "TargetName" = "8:tesannwyn.mpb"
-            "Tag" = "8:"
-            "Folder" = "8:_7A8B39A3A94C4FF88EE221663B254595"
-            "Condition" = "8:CHECKBOXA1 and REGISTRYOBLIVION"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -314,26 +218,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_700B3C6DC81E4198B5D82A131AA10D8D"
-            {
-            "SourcePath" = "8:..\\mpgui\\tesannwyn.mpb"
-            "TargetName" = "8:tesannwyn.mpb"
-            "Tag" = "8:"
-            "Folder" = "8:_00D044BDC9F742F8A8D005853AFE4186"
-            "Condition" = "8:CHECKBOXA1 and REGISTRYSKYRIM"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9095FD90AFBC49E8BCE6E4DEF6DE81B1"
             {
             "SourcePath" = "8:..\\mpgui\\REFERENCE_MANUAL.pdf"
@@ -341,26 +225,6 @@
             "Tag" = "8:"
             "Folder" = "8:_78E9AD775F5641579B97922100C31A05"
             "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9D8E8A267ABA4BD18D20042C9FD10BE0"
-            {
-            "SourcePath" = "8:..\\mpgui\\tes4qlod.mpb"
-            "TargetName" = "8:tes4qlod.mpb"
-            "Tag" = "8:"
-            "Folder" = "8:_7A8B39A3A94C4FF88EE221663B254595"
-            "Condition" = "8:CHECKBOXA1 and REGISTRYOBLIVION"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
@@ -434,26 +298,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EFA3EDFB0CC24E078B1E6CE3A31AAEB7"
-            {
-            "SourcePath" = "8:..\\mpgui\\tes4qlod.mpb"
-            "TargetName" = "8:tes4qlod.mpb"
-            "Tag" = "8:"
-            "Folder" = "8:_00D044BDC9F742F8A8D005853AFE4186"
-            "Condition" = "8:CHECKBOXA1 and REGISTRYSKYRIM"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F141215FFD14484FAC5A55A6FA01F605"
             {
             "SourcePath" = "8:..\\mpgui\\license.rtf"
@@ -514,96 +358,6 @@
                 {
                 }
             }
-            "{994432C3-9487-495D-8656-3E829A8DBDDE}:_36A013DD59174ED4AC47B6D464A6B925"
-            {
-            "DefaultLocation" = "8:[REGISTRYMORROWIND]"
-            "Name" = "8:Morrowind"
-            "AlwaysCreate" = "11:FALSE"
-            "Condition" = "8:CHECKBOXA1 and REGISTRYMORROWIND"
-            "Transitive" = "11:FALSE"
-            "Property" = "8:NEWPROPERTY3"
-                "Folders"
-                {
-                    "{9EF0B969-E518-4E46-987F-47570745A589}:_852A76A412FD457081757ED8F6A8FD27"
-                    {
-                    "Name" = "8:Data Files"
-                    "AlwaysCreate" = "11:FALSE"
-                    "Condition" = "8:CHECKBOXA1 and REGISTRYMORROWIND"
-                    "Transitive" = "11:FALSE"
-                    "Property" = "8:_F68B7CA944B042EAA31C3BBC85923C1A"
-                        "Folders"
-                        {
-                            "{9EF0B969-E518-4E46-987F-47570745A589}:_47B365AF7028445DBA146315622AAD5D"
-                            {
-                            "Name" = "8:ini"
-                            "AlwaysCreate" = "11:FALSE"
-                            "Condition" = "8:CHECKBOXA1 and REGISTRYMORROWIND"
-                            "Transitive" = "11:FALSE"
-                            "Property" = "8:_D8DCFFFEA6AD4D09B233497CFA8246D5"
-                                "Folders"
-                                {
-                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_AEB3168076FD463E89DCE518B83F6C31"
-                                    {
-                                    "Name" = "8:mpgui"
-                                    "AlwaysCreate" = "11:FALSE"
-                                    "Condition" = "8:CHECKBOXA1 and REGISTRYMORROWIND"
-                                    "Transitive" = "11:FALSE"
-                                    "Property" = "8:_E137CC9F9FFF48E182432F4C4D503E47"
-                                        "Folders"
-                                        {
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            "{994432C3-9487-495D-8656-3E829A8DBDDE}:_4875A465E18D4D1590F84FFB04934093"
-            {
-            "DefaultLocation" = "8:[REGISTRYOBLIVION]"
-            "Name" = "8:Oblivion"
-            "AlwaysCreate" = "11:FALSE"
-            "Condition" = "8:CHECKBOXA1 and REGISTRYOBLIVION"
-            "Transitive" = "11:FALSE"
-            "Property" = "8:NEWPROPERTY1"
-                "Folders"
-                {
-                    "{9EF0B969-E518-4E46-987F-47570745A589}:_C1669285A06447E8AF08B54F89D02D9A"
-                    {
-                    "Name" = "8:Data"
-                    "AlwaysCreate" = "11:FALSE"
-                    "Condition" = "8:CHECKBOXA1 and REGISTRYOBLIVION"
-                    "Transitive" = "11:FALSE"
-                    "Property" = "8:_B002BC19EA204203A5F3DB9BCB367D67"
-                        "Folders"
-                        {
-                            "{9EF0B969-E518-4E46-987F-47570745A589}:_514D9F809CDE4051A9B18BC4F1F2FC88"
-                            {
-                            "Name" = "8:ini"
-                            "AlwaysCreate" = "11:FALSE"
-                            "Condition" = "8:CHECKBOXA1 and REGISTRYOBLIVION"
-                            "Transitive" = "11:FALSE"
-                            "Property" = "8:_ED4DDD625737487482DD912AC8F9B95F"
-                                "Folders"
-                                {
-                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_7A8B39A3A94C4FF88EE221663B254595"
-                                    {
-                                    "Name" = "8:mpgui"
-                                    "AlwaysCreate" = "11:FALSE"
-                                    "Condition" = "8:CHECKBOXA1 and REGISTRYOBLIVION"
-                                    "Transitive" = "11:FALSE"
-                                    "Property" = "8:_F01ACB655739477AA586D8B7097B9651"
-                                        "Folders"
-                                        {
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
             "{3C67513D-01DD-4637-8A68-80971EB9504F}:_5B3D51D947454411B2217E7128A65D3D"
             {
             "DefaultLocation" = "8:[ProgramFilesFolder]\\[ProductName]"
@@ -638,96 +392,6 @@
                     }
                 }
             }
-            "{994432C3-9487-495D-8656-3E829A8DBDDE}:_7205D1D7119748F68F2C9FC5CFE0E7CD"
-            {
-            "DefaultLocation" = "8:[REGISTRYSKYRIM]"
-            "Name" = "8:Skyrim"
-            "AlwaysCreate" = "11:FALSE"
-            "Condition" = "8:CHECKBOXA1 and REGISTRYSKYRIM"
-            "Transitive" = "11:FALSE"
-            "Property" = "8:NEWPROPERTY2"
-                "Folders"
-                {
-                    "{9EF0B969-E518-4E46-987F-47570745A589}:_3639676EF8F74BE0946FB39BA9466A7C"
-                    {
-                    "Name" = "8:Data"
-                    "AlwaysCreate" = "11:FALSE"
-                    "Condition" = "8:CHECKBOXA1 and REGISTRYSKYRIM"
-                    "Transitive" = "11:FALSE"
-                    "Property" = "8:_451D838411BA4199AACCBD0D894344AD"
-                        "Folders"
-                        {
-                            "{9EF0B969-E518-4E46-987F-47570745A589}:_60747663024A4895BD76307E5B7F2278"
-                            {
-                            "Name" = "8:ini"
-                            "AlwaysCreate" = "11:FALSE"
-                            "Condition" = "8:CHECKBOXA1 and REGISTRYSKYRIM"
-                            "Transitive" = "11:FALSE"
-                            "Property" = "8:_56D96EB39E4140D2A55CFAC7638E17AB"
-                                "Folders"
-                                {
-                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_00D044BDC9F742F8A8D005853AFE4186"
-                                    {
-                                    "Name" = "8:mpgui"
-                                    "AlwaysCreate" = "11:FALSE"
-                                    "Condition" = "8:CHECKBOXA1 and REGISTRYOBLIVION"
-                                    "Transitive" = "11:FALSE"
-                                    "Property" = "8:_3D6E7B82717D411CB2FC41BAD4739DE7"
-                                        "Folders"
-                                        {
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            "{994432C3-9487-495D-8656-3E829A8DBDDE}:_7F8E7B6869F044BD83EA4D55C8AB8E4D"
-            {
-            "DefaultLocation" = "8:[REGISTRYFALLOUT3]"
-            "Name" = "8:Fallout3"
-            "AlwaysCreate" = "11:FALSE"
-            "Condition" = "8:CHECKBOXA1 and REGISTRYFALLOUT3"
-            "Transitive" = "11:FALSE"
-            "Property" = "8:NEWPROPERTY4"
-                "Folders"
-                {
-                    "{9EF0B969-E518-4E46-987F-47570745A589}:_FEC521D0A15B4F9A9CBC73600E0EB162"
-                    {
-                    "Name" = "8:Data"
-                    "AlwaysCreate" = "11:FALSE"
-                    "Condition" = "8:CHECKBOXA1 and REGISTRYFALLOUT3"
-                    "Transitive" = "11:FALSE"
-                    "Property" = "8:_80B9AF7876D94AFAA451B06C08647AAA"
-                        "Folders"
-                        {
-                            "{9EF0B969-E518-4E46-987F-47570745A589}:_331258970D74460B9252ADD9C462B8AC"
-                            {
-                            "Name" = "8:ini"
-                            "AlwaysCreate" = "11:FALSE"
-                            "Condition" = "8:CHECKBOXA1 and REGISTRYFALLOUT3"
-                            "Transitive" = "11:FALSE"
-                            "Property" = "8:_4048A78B4F6449D2B95A806747A057BE"
-                                "Folders"
-                                {
-                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_108DC736B6734026971978CE6C59B08D"
-                                    {
-                                    "Name" = "8:mpgui"
-                                    "AlwaysCreate" = "11:FALSE"
-                                    "Condition" = "8:CHECKBOXA1 and REGISTRYFALLOUT3"
-                                    "Transitive" = "11:FALSE"
-                                    "Property" = "8:_77149814D324454FA23C95CB5828BBCB"
-                                        "Folders"
-                                        {
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
             "{1525181F-901A-416C-8A58-119130FE478E}:_BEAA510809D04590BA72D04B46DDB478"
             {
             "Name" = "8:#1919"
@@ -745,38 +409,6 @@
         }
         "Locator"
         {
-            "{CF66B7F7-B7DA-4B08-A67A-233430638C9C}:_2E39B9FD975C44A9A6A14C6574176267"
-            {
-            "Name" = "8:Nach Morrowind suchen"
-            "Root" = "2:1"
-            "RegKey" = "8:SOFTWARE\\Bethesda Softworks\\Morrowind"
-            "Value" = "8:Installed Path"
-            "Property" = "8:REGISTRYMORROWIND"
-            }
-            "{CF66B7F7-B7DA-4B08-A67A-233430638C9C}:_65115028615848B2AFC512330F6E24DD"
-            {
-            "Name" = "8:Nach Oblivion suchen"
-            "Root" = "2:1"
-            "RegKey" = "8:SOFTWARE\\Bethesda Softworks\\Oblivion"
-            "Value" = "8:Installed Path"
-            "Property" = "8:REGISTRYOBLIVION"
-            }
-            "{CF66B7F7-B7DA-4B08-A67A-233430638C9C}:_A0822EC3C33C4E41862679A9592E828D"
-            {
-            "Name" = "8:Nach Fallout3 suchen"
-            "Root" = "2:1"
-            "RegKey" = "8:SOFTWARE\\Bethesda Softworks\\Fallout3"
-            "Value" = "8:Installed Path"
-            "Property" = "8:REGISTRYFALLOUT3"
-            }
-            "{CF66B7F7-B7DA-4B08-A67A-233430638C9C}:_B0A90B8D4DB2492191ACF470B3931677"
-            {
-            "Name" = "8:Nach Skyrim suchen"
-            "Root" = "2:1"
-            "RegKey" = "8:SOFTWARE\\Bethesda Softworks\\Skyrim"
-            "Value" = "8:Installed Path"
-            "Property" = "8:REGISTRYSKYRIM"
-            }
         }
         "MsiBootstrapper"
         {
@@ -1181,262 +813,6 @@
                             }
                         }
                     }
-                    "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_B10A4C588FD144B3BFB65B4EC5747286"
-                    {
-                    "Sequence" = "3:400"
-                    "DisplayName" = "8:Kontrollkästchen   (A)"
-                    "UseDynamicProperties" = "11:TRUE"
-                    "IsDependency" = "11:FALSE"
-                    "SourcePath" = "8:<VsdDialogDir>\\VsdCustomCheck1Dlg.wid"
-                        "Properties"
-                        {
-                            "BannerBitmap"
-                            {
-                            "Name" = "8:BannerBitmap"
-                            "DisplayName" = "8:#1001"
-                            "Description" = "8:#1101"
-                            "Type" = "3:8"
-                            "ContextData" = "8:Bitmap"
-                            "Attributes" = "3:4"
-                            "Setting" = "3:1"
-                            "UsePlugInResources" = "11:TRUE"
-                            }
-                            "BannerText"
-                            {
-                            "Name" = "8:BannerText"
-                            "DisplayName" = "8:#1014"
-                            "Description" = "8:#1114"
-                            "Type" = "3:3"
-                            "ContextData" = "8:"
-                            "Attributes" = "3:0"
-                            "Setting" = "3:2"
-                            "Value" = "8:Install batch file templates"
-                            "DefaultValue" = "8:#1214"
-                            "UsePlugInResources" = "11:TRUE"
-                            }
-                            "BodyText"
-                            {
-                            "Name" = "8:BodyText"
-                            "DisplayName" = "8:#1015"
-                            "Description" = "8:#1115"
-                            "Type" = "3:3"
-                            "ContextData" = "8:"
-                            "Attributes" = "3:0"
-                            "Setting" = "3:2"
-                            "Value" = "8:The following game directories have been found: [REGISTRYMORROWIND] [REGISTRYOBLIVION] [REGISTRYSKYRIM] [REGISTRYFALLOUT3]"
-                            "DefaultValue" = "8:#1215"
-                            "UsePlugInResources" = "11:TRUE"
-                            }
-                            "Checkbox1Label"
-                            {
-                            "Name" = "8:Checkbox1Label"
-                            "DisplayName" = "8:#1034"
-                            "Description" = "8:#1134"
-                            "Type" = "3:3"
-                            "ContextData" = "8:"
-                            "Attributes" = "3:0"
-                            "Setting" = "3:2"
-                            "Value" = "8:Install templates in these game directories"
-                            "DefaultValue" = "8:#1234"
-                            "UsePlugInResources" = "11:TRUE"
-                            }
-                            "Checkbox1Property"
-                            {
-                            "Name" = "8:Checkbox1Property"
-                            "DisplayName" = "8:#1030"
-                            "Description" = "8:#1130"
-                            "Type" = "3:14"
-                            "ContextData" = "8:Public"
-                            "Attributes" = "3:2"
-                            "Setting" = "3:2"
-                            "Value" = "8:CHECKBOXA1"
-                            "DefaultValue" = "8:CHECKBOXA1"
-                            "UsePlugInResources" = "11:TRUE"
-                            }
-                            "Checkbox1Value"
-                            {
-                            "Name" = "8:Checkbox1Value"
-                            "DisplayName" = "8:#1038"
-                            "Description" = "8:#1138"
-                            "Type" = "3:2"
-                            "ContextData" = "8:Unchecked=;Checked=1"
-                            "Attributes" = "3:0"
-                            "Setting" = "3:2"
-                            "Value" = "8:1"
-                            "DefaultValue" = "8:"
-                            "UsePlugInResources" = "11:TRUE"
-                            }
-                            "Checkbox1Visible"
-                            {
-                            "Name" = "8:Checkbox1Visible"
-                            "DisplayName" = "8:#1026"
-                            "Description" = "8:#1126"
-                            "Type" = "3:5"
-                            "ContextData" = "8:1;True=1;False=0"
-                            "Attributes" = "3:0"
-                            "Setting" = "3:0"
-                            "Value" = "3:1"
-                            "DefaultValue" = "3:1"
-                            "UsePlugInResources" = "11:TRUE"
-                            }
-                            "Checkbox2Label"
-                            {
-                            "Name" = "8:Checkbox2Label"
-                            "DisplayName" = "8:#1035"
-                            "Description" = "8:#1135"
-                            "Type" = "3:3"
-                            "ContextData" = "8:"
-                            "Attributes" = "3:0"
-                            "Setting" = "3:1"
-                            "Value" = "8:#1235"
-                            "DefaultValue" = "8:#1235"
-                            "UsePlugInResources" = "11:TRUE"
-                            }
-                            "Checkbox2Property"
-                            {
-                            "Name" = "8:Checkbox2Property"
-                            "DisplayName" = "8:#1031"
-                            "Description" = "8:#1131"
-                            "Type" = "3:14"
-                            "ContextData" = "8:Public"
-                            "Attributes" = "3:2"
-                            "Setting" = "3:2"
-                            "Value" = "8:CHECKBOXA2"
-                            "DefaultValue" = "8:CHECKBOXA2"
-                            "UsePlugInResources" = "11:TRUE"
-                            }
-                            "Checkbox2Value"
-                            {
-                            "Name" = "8:Checkbox2Value"
-                            "DisplayName" = "8:#1039"
-                            "Description" = "8:#1139"
-                            "Type" = "3:2"
-                            "ContextData" = "8:Unchecked=;Checked=1"
-                            "Attributes" = "3:0"
-                            "Setting" = "3:2"
-                            "Value" = "8:"
-                            "DefaultValue" = "8:"
-                            "UsePlugInResources" = "11:TRUE"
-                            }
-                            "Checkbox2Visible"
-                            {
-                            "Name" = "8:Checkbox2Visible"
-                            "DisplayName" = "8:#1027"
-                            "Description" = "8:#1127"
-                            "Type" = "3:5"
-                            "ContextData" = "8:1;True=1;False=0"
-                            "Attributes" = "3:0"
-                            "Setting" = "3:0"
-                            "Value" = "3:0"
-                            "DefaultValue" = "3:1"
-                            "UsePlugInResources" = "11:TRUE"
-                            }
-                            "Checkbox3Label"
-                            {
-                            "Name" = "8:Checkbox3Label"
-                            "DisplayName" = "8:#1036"
-                            "Description" = "8:#1136"
-                            "Type" = "3:3"
-                            "ContextData" = "8:"
-                            "Attributes" = "3:0"
-                            "Setting" = "3:1"
-                            "Value" = "8:#1236"
-                            "DefaultValue" = "8:#1236"
-                            "UsePlugInResources" = "11:TRUE"
-                            }
-                            "Checkbox3Property"
-                            {
-                            "Name" = "8:Checkbox3Property"
-                            "DisplayName" = "8:#1032"
-                            "Description" = "8:#1132"
-                            "Type" = "3:14"
-                            "ContextData" = "8:Public"
-                            "Attributes" = "3:2"
-                            "Setting" = "3:2"
-                            "Value" = "8:CHECKBOXA3"
-                            "DefaultValue" = "8:CHECKBOXA3"
-                            "UsePlugInResources" = "11:TRUE"
-                            }
-                            "Checkbox3Value"
-                            {
-                            "Name" = "8:Checkbox3Value"
-                            "DisplayName" = "8:#1040"
-                            "Description" = "8:#1140"
-                            "Type" = "3:2"
-                            "ContextData" = "8:Unchecked=;Checked=1"
-                            "Attributes" = "3:0"
-                            "Setting" = "3:2"
-                            "Value" = "8:"
-                            "DefaultValue" = "8:"
-                            "UsePlugInResources" = "11:TRUE"
-                            }
-                            "Checkbox3Visible"
-                            {
-                            "Name" = "8:Checkbox3Visible"
-                            "DisplayName" = "8:#1028"
-                            "Description" = "8:#1128"
-                            "Type" = "3:5"
-                            "ContextData" = "8:1;True=1;False=0"
-                            "Attributes" = "3:0"
-                            "Setting" = "3:0"
-                            "Value" = "3:0"
-                            "DefaultValue" = "3:1"
-                            "UsePlugInResources" = "11:TRUE"
-                            }
-                            "Checkbox4Label"
-                            {
-                            "Name" = "8:Checkbox4Label"
-                            "DisplayName" = "8:#1037"
-                            "Description" = "8:#1137"
-                            "Type" = "3:3"
-                            "ContextData" = "8:"
-                            "Attributes" = "3:0"
-                            "Setting" = "3:1"
-                            "Value" = "8:#1237"
-                            "DefaultValue" = "8:#1237"
-                            "UsePlugInResources" = "11:TRUE"
-                            }
-                            "Checkbox4Property"
-                            {
-                            "Name" = "8:Checkbox4Property"
-                            "DisplayName" = "8:#1033"
-                            "Description" = "8:#1133"
-                            "Type" = "3:14"
-                            "ContextData" = "8:Public"
-                            "Attributes" = "3:2"
-                            "Setting" = "3:2"
-                            "Value" = "8:CHECKBOXA4"
-                            "DefaultValue" = "8:CHECKBOXA4"
-                            "UsePlugInResources" = "11:TRUE"
-                            }
-                            "Checkbox4Value"
-                            {
-                            "Name" = "8:Checkbox4Value"
-                            "DisplayName" = "8:#1041"
-                            "Description" = "8:#1141"
-                            "Type" = "3:2"
-                            "ContextData" = "8:Unchecked=;Checked=1"
-                            "Attributes" = "3:0"
-                            "Setting" = "3:2"
-                            "Value" = "8:"
-                            "DefaultValue" = "8:"
-                            "UsePlugInResources" = "11:TRUE"
-                            }
-                            "Checkbox4Visible"
-                            {
-                            "Name" = "8:Checkbox4Visible"
-                            "DisplayName" = "8:#1029"
-                            "Description" = "8:#1129"
-                            "Type" = "3:5"
-                            "ContextData" = "8:1;True=1;False=0"
-                            "Attributes" = "3:0"
-                            "Setting" = "3:0"
-                            "Value" = "3:0"
-                            "DefaultValue" = "3:1"
-                            "UsePlugInResources" = "11:TRUE"
-                            }
-                        }
-                    }
                 }
             }
             "{DF760B10-853B-4699-99F2-AFF7185B4A62}:_9F5EE2117E0340CCAAA4D0ED2BB5BE6E"
@@ -1466,7 +842,7 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_D2EDA694D6DA4CD69405D4DCE0500A4A"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_8AFEFE21AF6044038DAD0820DD95B2B5"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"

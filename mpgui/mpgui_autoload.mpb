@@ -34,6 +34,7 @@ SetGameStdWorldspace -n=5 -value="Tamriel"
 
 AddGame              -n=6 -name=Fallout4
 SetGamePluginFile    -n=6 -value="$_appdata\Fallout4\plugins.txt"
+SetGameLoadorderFile -n=6 -value="$_appdata\Fallout4\loadorder.txt"
 SetGameSearchPattern -n=6 -value="Fallout 4"
 SetGameStdWorldspace -n=6 -value="Commonwealth"
 

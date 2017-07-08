@@ -171,4 +171,6 @@ pip-log.txt
 externals/
 sandbox/
 *.log
+tes4ll_all.mpb
+Skyrim.esm
 

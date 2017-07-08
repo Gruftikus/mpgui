@@ -113,6 +113,7 @@ int ExportTES4LandT4QLOD(const char *input_esp_filename, llLogger * mesg)
 	int size = 0,	   /* Size of current record.               */
 	    pos = 0;
 	char s[40];	/* For storing the record header.     */
+	char s1[5] = "none";
 	char *r;	/* Pointer to the Record Data.        */
 
 	FILE *fpin; /* Input File Stream (original ESP/ESM).  */
@@ -126,10 +127,16 @@ int ExportTES4LandT4QLOD(const char *input_esp_filename, llLogger * mesg)
 	while (fread(s, sizeof( char ), 8, fpin) > 0) {
 
 		if (!isalpha(s[0]) && !isalpha(s[1]) && !isalpha(s[2]) && !isalpha(s[3])) {
-			mesg->WriteNextLine(LOG_WARNING,"FOUND A WILD NON-ASCII RECORD HEADER: %c%c%c%c ", s[0], s[1], s[2], s[3]);
+			mesg->WriteNextLine(LOG_ERROR, " - WARNING: FOUND A WILD NON-ASCII RECORD HEADER in file %s, last rec was %c%c%c%c\n", input_esp_filename, s1[0], s1[1], s1[2], s1[3]);
 			fclose(fpin);
 			return 1;
 		}
+
+		s1[0] = s[0];
+		s1[1] = s[1];
+		s1[2] = s[2];
+		s1[3] = s[3];
+
 
 		/**************************************
 		 * The Core TES4 ESM/ESP Record Parser.
@@ -146,6 +153,7 @@ int ExportTES4LandT4QLOD(const char *input_esp_filename, llLogger * mesg)
 			strncmp(s, "DELE", 4) == 0 ||
 			strncmp(s, "CNAM", 4) == 0 ||
 			strncmp(s, "INTV", 4) == 0 ||
+			strncmp(s, "INCC", 4) == 0 ||
 			strncmp(s, "ONAM", 4) == 0 ||
 			strncmp(s, "SNAM", 4) == 0) {
 

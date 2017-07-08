@@ -697,8 +697,16 @@ namespace mpgui {
 				//batch->Open( (char*)(void*)Marshal::StringToHGlobalAnsi(file), "[_gamemode]");
 				mesg->WriteNextLine(LOG_INFO, "Open '%s'", cxt.marshal_as<char const*>(file)); //geht alleine
 				batch->ReadCache(1);
-				//batch->CompileScript();
+				batch->OpenSection("[_gamemode]");
+				batch->CompileScript(0);
 				update_all_tabs(-1, "[_gamemode]");
+				if (_llUtils()->GetValue("_gamemode")) {
+					mesg->WriteNextLine(LOG_INFO, "Gamemode '%s'", _llUtils()->GetValue("_gamemode")); 
+					for (int i=0; i<MAX_GAMES; i++) {
+						if (game[i] && _stricmp(game[i], _llUtils()->GetValue("_gamemode"))==0)
+							gamemode = i;
+					}
+				}
 
 				Dump();
 				if (!gamemode) {
@@ -715,7 +723,7 @@ namespace mpgui {
 									if (std_ws[gamemode])
 										ws_primary = gcnew String(std_ws[gamemode]);
 									_llUtils()->SetValue("_gamemode", game[gamemode]);
-									_llUtils()->SetHidden("_gamemode");
+									//_llUtils()->SetHidden("_gamemode");
 								}
 							}
 						}
@@ -749,32 +757,47 @@ namespace mpgui {
 	public: System::Void update_game_path(System::Void) {
 				using namespace Microsoft::Win32;
 				msclr::interop::marshal_context cxt; 
-				//set current directory to game path
-				if (gamemode) {
-					RegistryKey ^rk = nullptr;
-					rk = Registry::LocalMachine->OpenSubKey(L"SOFTWARE\\Bethesda Softworks\\" + gcnew String(game[gamemode]));
-					if (rk == nullptr) {
-						rk = Registry::LocalMachine->OpenSubKey(L"SOFTWARE\\Wow6432Node\\Bethesda Softworks\\" + gcnew String(game[gamemode]));
-					}
-					if (rk == nullptr) {
-						mesg->WriteNextLine(LOG_ERROR, "No registry entry for selected game, chdir not possible");
-					} else {
-						String ^rgValue = gcnew String(rk->GetValue("Installed Path")->ToString());
-						if (rgValue) {
-							if (gamemode == 1)
-								Directory::SetCurrentDirectory(rgValue + "\\Data Files\\");
-							else
-								Directory::SetCurrentDirectory(rgValue + "\\Data\\");
-							char *tmp2 = new char[strlen(cxt.marshal_as<const char*>(Directory::GetCurrentDirectory()))+1];
-							strcpy_s(tmp2, strlen(cxt.marshal_as<const char*>(Directory::GetCurrentDirectory()))+1, cxt.marshal_as<const char*>(Directory::GetCurrentDirectory()));
-							_llUtils()->SetValue("_gamedir", tmp2);
-							_llUtils()->SetHidden("_gamedir");
-						} else  {
-							mesg->WriteNextLine(LOG_ERROR, 
-								"Registry entry 'Installed Path' for selected game not found, chdir not possible");
-						} 
-					}
+#if 1
+				try {
+					//set current directory to game path
+					if (_llUtils()->GetValue("_gamedir")) {
+						Directory::SetCurrentDirectory(gcnew String(_llUtils()->GetValue("_gamedir")));
+					} else if (gamemode) {
+						RegistryKey ^rk = nullptr;
+						rk = Registry::LocalMachine->OpenSubKey(L"SOFTWARE\\Bethesda Softworks\\" + gcnew String(game[gamemode]));
+						if (rk == nullptr) {
+							rk = Registry::LocalMachine->OpenSubKey(L"SOFTWARE\\Wow6432Node\\Bethesda Softworks\\" + gcnew String(game[gamemode]));
+						}
+						if (rk == nullptr) {
+							mesg->WriteNextLine(LOG_ERROR, "No registry entry for selected game, chdir not possible");
+						} else {
+							String ^rgValue = gcnew String(rk->GetValue("Installed Path")->ToString());
+							if (rgValue) {
+								if (gamemode == 1)
+									Directory::SetCurrentDirectory(rgValue + "\\Data Files\\");
+								else
+									Directory::SetCurrentDirectory(rgValue + "\\Data\\");
+								char *tmp2 = new char[strlen(cxt.marshal_as<const char*>(Directory::GetCurrentDirectory()))+1];
+								strcpy_s(tmp2, strlen(cxt.marshal_as<const char*>(Directory::GetCurrentDirectory()))+1, cxt.marshal_as<const char*>(Directory::GetCurrentDirectory()));
+								_llUtils()->SetValue("_gamedir", tmp2);
+								_llUtils()->SetHidden("_gamedir");
+							} else  {
+								mesg->WriteNextLine(LOG_ERROR, 
+									"Registry entry 'Installed Path' for selected game not found, chdir not possible");
+							} 
+						}
+					} 
 				}
+				catch ( DirectoryNotFoundException^ e ) 
+				{
+					// Let the user know that the directory did not exist.
+					mesg->WriteNextLine(LOG_ERROR, 
+						"Path '%s' for selected game not found, chdir not possible", _llUtils()->GetValue("_gamedir"));
+				}
+#endif
+				char *tmp2 = _llUtils()->NewString(cxt.marshal_as<const char*>(Directory::GetCurrentDirectory()));
+				_llUtils()->SetValue("_gamedir", tmp2);			
+
 			}
 
 	public: System::Void update_game_menu(System::Void) {
@@ -875,7 +898,7 @@ namespace mpgui {
 						l_listname = gcnew String(loadorder[gamemode]);
 						if (!System::IO::File::Exists(l_listname)) {
 							if (s_listname) {
-								mesg->WriteNextLine(LOG_WARNING, "Loadorder.txt file not existing, use Plugins.txt as a fallback");
+								mesg->WriteNextLine(LOG_WARNING, "Loadorder.txt file not existing, using Plugins.txt as a fallback");
 								l_listname = s_listname;
 							} else {
 								mesg->WriteNextLine(LOG_WARNING, "Plugins.txt file not existing, getting loadorder not possible");
@@ -938,7 +961,7 @@ namespace mpgui {
 						for (int i=0; i<dirs1->Length; i++) {
 							if (str->Equals(System::IO::Path::GetFileName(dirs1[i]), System::StringComparison::CurrentCultureIgnoreCase)) {
 								index[i] = count;
-								mesg->WriteNextLine(LOG_INFO, "Setting '%s' to %i", cxt.marshal_as<char const*>(dirs1[i]), count);
+								//mesg->WriteNextLine(LOG_INFO, "Setting '%s' to %i", cxt.marshal_as<char const*>(dirs1[i]), count);
 							}
 						}
 						count++;
