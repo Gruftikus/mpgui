@@ -414,7 +414,7 @@ namespace mpgui {
 			//
 			this->gameDirToolStripMenuItem->Name = L"gameDirToolStripMenuItem";
 			this->gameDirToolStripMenuItem->Size = System::Drawing::Size(152, 22);
-			this->gameDirToolStripMenuItem->Text = L"&Custom game directory";
+			this->gameDirToolStripMenuItem->Text = L"&Choose mod path";
 			this->gameDirToolStripMenuItem->Click += gcnew System::EventHandler(this, &Form1::gameDirToolStripMenuItem_Click);
 
 			//submenue
@@ -770,6 +770,7 @@ namespace mpgui {
     //********************************************** Game dir
 	private: System::Void gameDirToolStripMenuItem_Click(System::Object ^sender, System::EventArgs ^e) {
 				 this->folderBrowserDialog1->RootFolder = Environment::SpecialFolder::Desktop;
+				 this->folderBrowserDialog1->ShowNewFolderButton = false;
 				 if (_llUtils()->GetValue("_gamedir"))
 					 this->folderBrowserDialog1->SelectedPath = gcnew String(_llUtils()->GetValue("_gamedir"));
 				 else
@@ -906,6 +907,7 @@ namespace mpgui {
 	public: System::Void FillPlugins(System::Void) {
 				checkedListBox1->Items->Clear();
 				button_std->Enabled = false;
+				s_listname = nullptr;
 
 				if (!plugin[gamemode]) {
 					mesg->WriteNextLine(LOG_WARNING, "Plugins.txt not set, Plugins button disabled");
@@ -917,6 +919,7 @@ namespace mpgui {
 					if (!System::IO::File::Exists(s_listname)) {
 						mesg->WriteNextLine(LOG_WARNING, "Plugins.txt file not existing, Plugins button disabled");
 						button_std->Enabled = false;
+						s_listname = nullptr;
 					}
 					Dump();
 				}
@@ -1499,88 +1502,6 @@ namespace mpgui {
 
 					 } //while
 
-#if 0
-						 
-
-						 if (com == COM_SETFLAG) {
-							 get_object(&tab, &obj, batch->myflagname);
-							 //mesg->WriteNextLine(MH_WARNING,"flag %s", batch->myflagname);
-							 if (strcmp(batch->myflagname,"_modlist") == 0) {
-								 for ( int i = 0; i < checkedListBox1->Items->Count; i++ )
-								 {
-									 checkedListBox1->SetItemChecked(i,false);
-								 }
-								 //mesg->WriteNextLine(MH_WARNING,"Mod cruch");
-								 batch->CrunchStart(batch->myflagvalue);
-								 while (batch->CrunchNext()) {
-									 String^ str = gcnew String(batch->CrunchCurrent());
-									 //mesg->WriteNextLine(MH_WARNING,"Mod '%s'",batch->CrunchCurrent());
-									 int j = checkedListBox1->FindStringExact(str);
-									 if (j != ListBox::NoMatches) 
-										 checkedListBox1->SetItemChecked(j,true);
-									 else
-										 mesg->WriteNextLine(MH_WARNING,"Mod '%s' not longer available",batch->CrunchCurrent());
-								 }
-								 if (checkedListBox1->CheckedItems->Count != 0) this->tab_ws->Enabled = true;
-								 else this->tab_ws->Enabled = false;
-							 }
-
-							 if (strcmp(batch->myflagname,"_worldspace") == 0) {
-								 tab_ws->Enabled = false;
-								 this->tab->SelectedIndex=2;
-								 ws_primary = gcnew String(batch->myflagvalue);
-								 if (backgroundWorker3->IsBusy) {
-									 this->backgroundWorker3->CancelAsync();
-									 MessageBox::Show(L"Background worldspace reader didn't finished - break and go for coffee....", L"Info");
-								 }
-								 while (backgroundWorker3->IsBusy);
-								 backgroundWorker3->RunWorkerAsync( 0 );
-								 //while (!tab_ws->Enabled);
-								 //this->tab->SelectedIndex=0;
-
-							 }
-
-							 if ( tab>-1 && obj>-1 && tab_app[tab]->Controls[obj]) {
-								 CheckBox ^tmp = dynamic_cast<CheckBox^>(tab_app[tab]->Controls[obj]);
-								 if (tmp) {
-									 // mesg->WriteNextLine(MH_WARNING,"bipong1");
-									 if (batch->unselect)
-										 tmp->Checked = false;
-									 else
-										 tmp->Checked = true;
-									 // mesg->WriteNextLine(MH_WARNING,"bipong2");
-								 }
-								 TextBox ^tmp2 = dynamic_cast<TextBox^>(tab_app[tab]->Controls[obj]);
-								 if (tmp2) {
-									 if (tmp2->BorderStyle == System::Windows::Forms::BorderStyle::FixedSingle)
-										 tmp2->Text = gcnew String(batch->myflagvalue);
-								 }
-							 } else	 {
-								 for (int ii=0;ii<tab_app->Length;ii++) {
-									 for (int ij=0;ij<tab_app[ii]->Controls->Count;ij++) {
-										 ComboBox ^dropdown = dynamic_cast<ComboBox^>(tab_app[ii]->Controls[ij]);
-										 if (dropdown && batch->GetDescription(batch->myflagname)) {
-											 //mesg->WriteNextLine(MH_WARNING,"%s",batch->myflagname);
-											 int index = dropdown->FindStringExact(gcnew String(batch->GetDescription(batch->myflagname)));
-											 if (index>=0 && !batch->unselect) {
-												 dropdown->SelectedIndex = index;
-											 }
-										 }
-									 }
-								 }
-							 }
-						 }
-
-
-
-
-
-						 
-
-
-						 }
-					 }
-#endif
 					 Dump();
 					 //before leaving the tab, disable all buttons variables
 					 if (j >= 0) {
@@ -1655,16 +1576,16 @@ namespace mpgui {
 					 input_filename[i] = 
 						 _llUtils()->NewString(cxt.marshal_as<char const*>(checkedListBox1->GetItemText(checkedListBox1->CheckedItems[i])));
 				 }
-				 tes4qlod_small();
 				 backgroundWorker3->RunWorkerAsync(0);
 			 }
 
 	public: void backgroundWorker3_DoWork(Object ^sender, DoWorkEventArgs ^e) {
 				BackgroundWorker ^worker = dynamic_cast<BackgroundWorker^>(sender);
 				worker->ReportProgress(0);
+				tes4qlod_small();
 				for (int i=0; i<input_count; i++) {
-					worker->ReportProgress( ((i+1)*100)/input_count, gcnew String(L"Open ") + gcnew String(input_filename[i]));
-					ExportTES4LandT4QLOD(input_filename[i], mesg);
+					worker->ReportProgress( ((i)*100)/input_count, gcnew String(L"Open ") + gcnew String(input_filename[i]));				
+					ExportTES4LandT4QLOD(input_filename[i], mesg);			
 					//worker->ReportProgress(i+1);
 				}	
 				worker->ReportProgress(100);
@@ -1673,6 +1594,11 @@ namespace mpgui {
 	private: void backgroundWorker3_RunWorkerCompleted(Object ^/*sender*/, RunWorkerCompletedEventArgs ^e) {
 				 if (e->Cancelled) {
 					 comboBox1->Items->Clear();
+					 return;
+				 }
+				 if (e->Error != nullptr) {
+					 comboBox1->Items->Clear();
+					 MessageBox::Show(e->Error->Message);
 					 return;
 				 }
 
@@ -1701,12 +1627,12 @@ namespace mpgui {
 					 comboBox1->Items->Add(scratch);
 					 scratch = gcnew String(wrld_name[i]);
 					 if (ws_primary && String::Compare(ws_primary,scratch)==0) {
-						 myidx=i;
+						 myidx = i;
 					 }
 				 }
 				 comboBox1->EndUpdate();
 
-				 if (myidx>=0) {
+				 if (myidx >= 0) {
 					 comboBox1->SelectedIndex = myidx;
 				 }
 

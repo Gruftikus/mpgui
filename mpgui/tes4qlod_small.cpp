@@ -3,14 +3,9 @@
 #include "tes4qlod_small.h"
 #include "llguicommands.h"
 
-int cleanup_list_x[1048576];
-int cleanup_list_y[1048576];
-int cleanup_list_count = 0;
-
-struct cell_data cell;
 
 int input_count;
-char const *input_filename[256];
+char const *input_filename[1000];
 
 int wrld_count;
 char *wrld_name[10000];
@@ -18,8 +13,6 @@ char *wrld_description[10000];
 char *wrld_formid[10000];
 char *wrld_mod[10000];
 int wrld_child[10000];
-
-
 
 char *opt_tes_mode = TES_UNKNOWN;
 int tes_rec_offset = TES4_OB_RECORD_SIZE; 
@@ -45,45 +38,15 @@ int tes_rec_offset = TES4_OB_RECORD_SIZE;
 
 int tes4qlod_small()
 {
-	wrld_count =0;
-
-	int in_group = 0,   /* Are we in a GRUP record group or not? */
-	    size,           /* Size of current record.             */
-	    group_size = 0,
-	    pos = 0;
-
-	char c;		/* For command-line getopts args.  */
-
-	/***********************************
-	 * Parse the command line arguments.
-	 **********************************/
+	wrld_count = 0;
 	
 	if (gamemode == 2) {
 		opt_tes_mode = TES_OBLIVION;
 		tes_rec_offset = TES4_OB_RECORD_SIZE;
-	}
-	if (gamemode == 3) {
-		opt_tes_mode = TES_FALLOUT3;
-		tes_rec_offset = TES4_FA_SK_RECORD_SIZE;
-	}
-	if (gamemode == 4) {
-		opt_tes_mode = TES_FALLOUTNV;
-		tes_rec_offset = TES4_FA_SK_RECORD_SIZE;
-	}
-	if (gamemode == 5) {
+	} else {
 		opt_tes_mode = TES_SKYRIM;
 		tes_rec_offset = TES4_FA_SK_RECORD_SIZE;
 	}
-
-	/*
-	 * Initialize variables:
-	 */
-
-//	printf("X offset will be %d. Y will be %d\n", opt_x_offset, opt_y_offset);
-
-	cell.name[0] = '\0';
-	cell.current_x = 0;
-	cell.current_y = 0;
 
 	return 0;
 }
@@ -104,9 +67,9 @@ int tes4qlod_small()
  **  4. Process4FRMRData() retrieves placed object data; FormID and whether they're VWD.
  ***********************************************************************************************/
 
-const char *current_esp;
+const char *current_esp = "none";
 
-int ExportTES4LandT4QLOD(const char *input_esp_filename, llLogger * mesg)
+int ExportTES4LandT4QLOD(const char *input_esp_filename, llLogger *mesg)
 {
 	current_esp = input_esp_filename;
 
@@ -258,12 +221,10 @@ int Process4WRLDData(char *r, int size)
 	 **********************************************/
 	if (strncmp("EDID", r + pos, 4) == 0) {
 
-		wrld_name[wrld_count] = "none";
 		wrld_formid[wrld_count] = new char[8];
 		wrld_description[wrld_count] = "\0";
-		wrld_child[wrld_count]=0;
-		wrld_mod[wrld_count] = new char[strlen(current_esp)+1];
-		strcpy(wrld_mod[wrld_count], current_esp);
+		wrld_child[wrld_count] = 0;
+		wrld_mod[wrld_count] = _llUtils()->NewString(current_esp);
 
 		nsize = 0;
 		memcpy(&nsize, r+pos+4, 2);
@@ -281,8 +242,6 @@ int Process4WRLDData(char *r, int size)
 			(unsigned char) (r[13]),
 			(unsigned char) (r[12]));
 
-		
-
 		if (strncmp("FULL", r + pos , 4) == 0) {
 			nsize2 = 0;
 			memcpy(&nsize2, r+pos+4, 2);
@@ -294,54 +253,50 @@ int Process4WRLDData(char *r, int size)
 			pos += nsize2;
 		} 
 	
-
 		if (strncmp("WNAM", r + pos , 4) == 0) {
-			wrld_child[wrld_count]=1;
+			wrld_child[wrld_count] = 1;
 			nsize3 = 0;
 			memcpy(&nsize3, r+pos+4, 2);
 			pos += 6;
 			pos += nsize3;
 		} 
 
-
 		//check if wrld is already there...
-		int p=0;
-		for (int j=0;j<wrld_count;j++) {
-			if (strcmp(wrld_formid[wrld_count],wrld_formid[j]) == 0 //&& 
+		int p = 0;
+		for (int j=0; j<wrld_count; j++) {
+			if (strcmp(wrld_formid[wrld_count], wrld_formid[j]) == 0 //&& 
 				//strcmp(wrld_mod[wrld_count],wrld_mod[j]) == 0
 				) {
-				if (strlen(wrld_description[wrld_count])) wrld_description[j] = wrld_description[wrld_count];
-				p=1;
-			}
+				if (strlen(wrld_description[wrld_count])) 
+					wrld_description[j] = _llUtils()->NewString(wrld_description[wrld_count]);
+				p = 1;
+			} 
 		}
 		if (!p) { //new....
 			wrld_count++;
-		}
-		
+		}	
 	}
 
 	return 0;
 }
 
 
-
-
 int StringToFormID(char *formid, char *s)
 {
-        int j;
-        char htmp[3];
-        char c;
+	int j;
+	char htmp[3];
+	char c;
 
-        for (j = 0; j < 4; j++) {
-                htmp[0] = s[(2*j)];
-                htmp[1] = s[(2*j)+1];
-                htmp[2] = '\0';
+	for (j = 0; j < 4; j++) {
+		htmp[0] = s[(2*j)];
+		htmp[1] = s[(2*j)+1];
+		htmp[2] = '\0';
 
-                if (islower(htmp[0])) htmp[0] = toupper(htmp[0]);
-                if (islower(htmp[1])) htmp[1] = toupper(htmp[1]);
+		if (islower(htmp[0])) htmp[0] = toupper(htmp[0]);
+		if (islower(htmp[1])) htmp[1] = toupper(htmp[1]);
 
-                sscanf(htmp, "%X", &c);
-                formid[j] = c;
+		sscanf(htmp, "%X", &c);
+		formid[j] = c;
 	}
 
 	return 0;
@@ -349,41 +304,41 @@ int StringToFormID(char *formid, char *s)
 
 int StringToReverseFormID(char *formid, char *s)
 {
-        int j;
-        char htmp[3];
-        char c;
+	int j;
+	char htmp[3];
+	char c;
 
-        for (j = 0; j < 4; j++) {
-                htmp[0] = s[(2*j)];
-                htmp[1] = s[(2*j)+1];
-                htmp[2] = '\0';
+	for (j = 0; j < 4; j++) {
+		htmp[0] = s[(2*j)];
+		htmp[1] = s[(2*j)+1];
+		htmp[2] = '\0';
 
-                if (islower(htmp[0])) htmp[0] = toupper(htmp[0]);
-                if (islower(htmp[1])) htmp[1] = toupper(htmp[1]);
+		if (islower(htmp[0])) htmp[0] = toupper(htmp[0]);
+		if (islower(htmp[1])) htmp[1] = toupper(htmp[1]);
 
-                sscanf(htmp, "%X", &c);
-                formid[3-j] = c;
-        }
+		sscanf(htmp, "%X", &c);
+		formid[3-j] = c;
+	}
 
-        return 0;
+	return 0;
 }
 
 int StringToHex(char *shex, char *s, int size)
 {
-        int j;
-        char htmp[3];
-        char c;
+	int j;
+	char htmp[3];
+	char c;
 
-        for (j = 0; j < 3; j++) {
-                htmp[0] = s[(2*j)];
-                htmp[1] = s[(2*j)+1];
-                htmp[2] = '\0';
+	for (j = 0; j < 3; j++) {
+		htmp[0] = s[(2*j)];
+		htmp[1] = s[(2*j)+1];
+		htmp[2] = '\0';
 
-                if (islower(htmp[0])) htmp[0] = toupper(htmp[0]);
-                if (islower(htmp[1])) htmp[1] = toupper(htmp[1]);
+		if (islower(htmp[0])) htmp[0] = toupper(htmp[0]);
+		if (islower(htmp[1])) htmp[1] = toupper(htmp[1]);
 
-                sscanf(htmp, "%X", &c);
-                shex[2-j] = c;
+		sscanf(htmp, "%X", &c);
+		shex[2-j] = c;
 	}
 	return 0;
 }

@@ -13,35 +13,14 @@
 //#include <zlib.h>
 //#include <unistd.h>
 #include "../../lltool/include/lllogger.h"
-
-
+#include "../../lltool/include/llutils.h"
 
 int ExportTES4LandT4QLOD(const char *input_esp_filename, llLogger * mesg);
 int Process4WRLDData(char *r, int size);
 int tes4qlod_small(void);
 
-
-
-
-extern int cleanup_list_x[1048576];
-extern int cleanup_list_y[1048576];
-extern int cleanup_list_count;
-
-extern struct cell_data {
-	int size;
-	char name[1024];
-	char worldspace_name[1024];
-	int worldspace_formid;
-	int current_x;
-	int current_y;
-	int type;
-	int save;
-	int copy;
-} cell;
-
-
 extern int input_count;
-extern char const *input_filename[256];
+extern char const *input_filename[1000];
 
 extern int wrld_count;
 extern char *wrld_name[10000];
