@@ -24,7 +24,13 @@ In the following, MPGUI tries to evaluate the game mode, by comparing the curren
 
 in the batch file. This can be helpful if MPGUI is not able to determine the game mode.
 
-The next step is to search for the section [MPGUI] and executes the commands listed there. This aim of this section is to extent the GUI with tabs. Keep in mind that, if the user opens several batch files, these sections are merged. Therefore, the use of “doonce” variables is advised.
+The next step is that the tools searches for the section [MPGUI] in the user batch file and executes the commands which are listed there. This aim of this section is to extent the GUI with tabs. Keep in mind that, if the user opens several batch files, these sections are merged. Therefore, the use of “doonce” variables is advised.
+
+## The GUI elements
+
+The user batch file also describes which GUI elements are shown, and their content. In most of the GUI commands, a unique name has to be defined, which is batch flag name as well. This means, by defining a GUI element, a corresponding flag will be created and stored. These two items are correlated: by changing the GUI content, the flag value is changed, and vice versa.
+
+Also the tabs itself have unique names, which is defined in the [MPGUI] section with the GUITab command. Here, the name is connected to a specific section with the same name, where the elements of the tab are defined.
 
 
 
