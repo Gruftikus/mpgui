@@ -17,8 +17,11 @@ The first step after starting MPGUI is that the auto load batch file (mpgui_auto
 MPGUI can be either started by hand, and any batch file can be loaded via "Open batch", or by making a double-click on the batch file. After the batch file has been read, MPGUI will examine its section [\_gamemode]. This allows to extent or overwrite settings done in the auto load file.
 
 In the following, MPGUI tries to evaluate the game mode, by comparing the current working directory to the defined search pattern defined by SetGameSearchPattern in the auto load file. This search for the game mode is disabled, if one adds the lines
+
 `[\_gamemode]`
+
 `GameMode -name=”...”`
+
 in the batch file. This can be helpful if MPGUI is not able to determine the game mode.
 
 The next step is to search for the section [MPGUI] and executes the commands listed there. This aim of this section is to extent the GUI with tabs. Keep in mind that, if the user opens several batch files, these sections are merged. Therefore, the use of “doonce” variables is advised.
