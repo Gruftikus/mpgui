@@ -40,7 +40,7 @@ The tab sections itself are evaluated directly after the batch file has been loa
 
 ## Game management
 
-* [`AddGame`](wiki/AddGame)
+* [`AddGame`](https://github.com/Gruftikus/lltool/wiki/AddGame)
 
 
 
