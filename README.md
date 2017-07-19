@@ -32,6 +32,15 @@ The user batch file also describes which GUI elements are shown, and their conte
 
 Also the tabs itself have unique names, which is defined in the [MPGUI] section with the GUITab command. Here, the name is connected to a specific section with the same name, where the elements of the tab are defined.
 
+## The tab sections
+
+The tab sections itself are evaluated directly after the batch file has been loaded, and the GUITab command connects the tab to its section. The section is re-evaluated each time, after GUI elements have been changed by the user.
+
+# Command list
+
+## Game management
+
+* [`AddGame`](wiki/AddGame)
 
 
 
