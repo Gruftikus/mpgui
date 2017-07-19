@@ -41,6 +41,10 @@ The tab sections itself are evaluated directly after the batch file has been loa
 ## Game management
 
 * [`AddGame`](https://github.com/Gruftikus/lltool/wiki/AddGame)
+* [`SetGamePluginFile`](https://github.com/Gruftikus/lltool/wiki/SetGamePluginFile)
+* [`SetGameSearchPattern`](https://github.com/Gruftikus/lltool/wiki/SetGameSearchPattern)
+* [`SetGameStdWorldspace`](https://github.com/Gruftikus/lltool/wiki/SetGameStdWorldspace)
+* [`GameMode`](https://github.com/Gruftikus/lltool/wiki/GameMode)
 
 
 
