@@ -874,7 +874,7 @@ namespace mpgui {
 						 if (std_ws[gamemode])
 							 ws_primary = gcnew String(std_ws[gamemode]);
 						 _llUtils()->SetValue("_gamemode", game[gamemode]);
-						 _llUtils()->SetHidden("_gamemode");
+						 //_llUtils()->SetHidden("_gamemode");
 					 }
 				 }
 				 update_loadorder();
