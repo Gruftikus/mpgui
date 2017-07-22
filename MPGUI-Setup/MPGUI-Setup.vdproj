@@ -33,14 +33,14 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_8AFEFE21AF6044038DAD0820DD95B2B5"
-        "OwnerKey" = "8:_50B2D2928D7147E5961B0DEA2BCD4A7D"
+        "MsmKey" = "8:_9095FD90AFBC49E8BCE6E4DEF6DE81B1"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_9095FD90AFBC49E8BCE6E4DEF6DE81B1"
-        "OwnerKey" = "8:_UNDEFINED"
+        "MsmKey" = "8:_B1DE9D6D82834DB1B1B0FEE3349BF25B"
+        "OwnerKey" = "8:_50B2D2928D7147E5961B0DEA2BCD4A7D"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -419,15 +419,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:MPGUI"
-        "ProductCode" = "8:{25B22D8C-4F3E-4C7F-B239-B0370DA1224A}"
-        "PackageCode" = "8:{81C1F130-C0A2-404A-95C9-ECF6401FB163}"
+        "ProductCode" = "8:{C3653AF7-EE47-45DE-B19A-A776EC33766A}"
+        "PackageCode" = "8:{E2D89F71-E278-4B6F-9752-55E8B8FADB7F}"
         "UpgradeCode" = "8:{4A048579-9AFB-469E-90B0-B184F71810D9}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
-        "RemovePreviousVersions" = "11:FALSE"
+        "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.99"
+        "ProductVersion" = "8:2.00"
         "Manufacturer" = "8:Gruftikus"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -842,11 +842,11 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_8AFEFE21AF6044038DAD0820DD95B2B5"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_B1DE9D6D82834DB1B1B0FEE3349BF25B"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:Microsoft_VC100_DebugCRT_x86.msm"
+            "SourcePath" = "8:Microsoft_VC100_CRT_x86.msm"
                 "Properties"
                 {
                 }
@@ -861,7 +861,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_50B2D2928D7147E5961B0DEA2BCD4A7D"
             {
-            "SourcePath" = "8:..\\Debug\\mpgui.exe"
+            "SourcePath" = "8:..\\Release\\mpgui.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_5B3D51D947454411B2217E7128A65D3D"

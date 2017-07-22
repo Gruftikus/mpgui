@@ -47,5 +47,5 @@ SetGameStdWorldspace -n=7 -value="Commonwealth"
 ;SetPath                   -value="$_workdir\ini\mpgui\"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-GUIConsoleEcho -text="Autoload batch file loaded"
+GUIConsoleEcho -text="Autoload batch file (created for MPGUI 2.00) has been loaded"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -152,8 +152,9 @@ namespace mpgui {
 			rk2 = Registry::CurrentUser->OpenSubKey("SOFTWARE\\MPGUI");
 			String ^auto4 = nullptr;
 			if (rk2 == nullptr) {
-				textBox1->AppendText("Registry key of MPGUI not found, autoload batch file can not be loaded from this place");
-				this->referenceManualToolStripMenuItem->Enabled = false;
+				textBox1->AppendText("Registry key of MPGUI not found, autoload batch file can not be loaded from this place"+ Environment::NewLine);
+				//this->referenceManualToolStripMenuItem->Enabled = false;
+				this->userReadmeToolStripMenuItem->Enabled = false;
 			} else {
 				if (rk2->GetValue("Path")) {
 					installdir = gcnew String(rk2->GetValue("Path")->ToString());
@@ -162,7 +163,7 @@ namespace mpgui {
 			}
 
 			//Version
-			_llUtils()->SetValue("_mpgui_version", "1.99");
+			_llUtils()->SetValue("_mpgui_version", "2.00");
 			_llUtils()->SetHidden("_mpgui_version");
 
 			//looking for the autostart
@@ -174,31 +175,30 @@ namespace mpgui {
 				if (batch->Open("mpgui_autoload.mpb", "[_autoload]")) {
 					batch->ReadCache(1);
 					batch->CompileScript();
-					textBox1->AppendText("Configuration loaded from working directory" + Environment::NewLine );
+					textBox1->AppendText("Configuration found in working directory" + Environment::NewLine );
 					update_all_tabs(-1, "[_autoload]");
 				}
 			} else if (System::IO::File::Exists(auto2)) {
 				if (batch->Open("ini\\mpgui_autoload.mpb", "[_autoload]")) {
 					batch->ReadCache(1);
 					batch->CompileScript();
-					textBox1->AppendText("Configuration loaded from \\INI directory" + Environment::NewLine );
+					textBox1->AppendText("Configuration found in \\INI directory" + Environment::NewLine );
 					update_all_tabs(-1, "[_autoload]");
 				}
 			} else if (System::IO::File::Exists(auto3)) {
 				if (batch->Open("ini\\mpgui\\mpgui_autoload.mpb", "[_autoload]")) {
 					batch->ReadCache(1);
 					batch->CompileScript();
-					textBox1->AppendText("Configuration loaded from \\INI\\MPGUI directory" + Environment::NewLine );
+					textBox1->AppendText("Configuration found in \\INI\\MPGUI directory" + Environment::NewLine );
 					update_all_tabs(-1, "[_autoload]");
 				}
 			} else if (auto4 &&  System::IO::File::Exists(auto4)) {
 				msclr::interop::marshal_context cxt; 
-				char *tmp2 = new char[strlen(cxt.marshal_as<const char*>(auto4))+1];
-				strcpy_s(tmp2,strlen(cxt.marshal_as<const char*>(auto4))+1,cxt.marshal_as<const char*>(auto4));
+				char *tmp2 = _llUtils()->NewString(cxt.marshal_as<const char*>(auto4));
 				if (batch->Open(tmp2, "[_autoload]")) {
 					batch->ReadCache(1);
 					batch->CompileScript();
-					textBox1->AppendText("Configuration loaded from install directory" + Environment::NewLine );
+					textBox1->AppendText("Configuration found in MPGUI installation directory" + Environment::NewLine );
 					update_all_tabs(-1, "[_autoload]");
 				}
 			} else  {
@@ -457,7 +457,7 @@ namespace mpgui {
 			// 
 			this->referenceManualToolStripMenuItem->Name = L"referenceManualToolStripMenuItem";
 			this->referenceManualToolStripMenuItem->Size = System::Drawing::Size(169, 22);
-			this->referenceManualToolStripMenuItem->Text = L"Reference manual";
+			this->referenceManualToolStripMenuItem->Text = L"Documentation on Github";
 			this->referenceManualToolStripMenuItem->Click += gcnew System::EventHandler(this, &Form1::referenceManualToolStripMenuItem_Click);
 			// 
 			// tab
@@ -1085,12 +1085,88 @@ namespace mpgui {
 					 Dump();
 
 					 int com;
+					 _llUtils()->myflagname = nullptr;
 
 					 while ((com = batch->GetCommand())>-2) {
 						 //mesg->WriteNextLine(LOG_INFO, "got %i", com);
 						 Dump();
 						 //before I continue I have to make sure that object is not on list already
 						 int tab=-1, obj=-1;
+
+						 if (com == COM_SETFLAG && _llUtils()->myflagname) {
+							 get_object(&tab, &obj, _llUtils()->myflagname);
+
+							 if (strcmp(_llUtils()->myflagname,"_modlist") == 0) {
+								 for (int i=0; i<checkedListBox1->Items->Count; i++) {
+									 checkedListBox1->SetItemChecked(i, false);
+								 }
+								 _llUtils()->CrunchStart(_llUtils()->myflagvalue);
+								 while (_llUtils()->CrunchNext()) {
+									 String^ str = gcnew String(_llUtils()->CrunchCurrent());
+									 int j = checkedListBox1->FindStringExact(str);
+									 if (j != ListBox::NoMatches) 
+										 checkedListBox1->SetItemChecked(j,true);
+									 else
+										 mesg->WriteNextLine(LOG_WARNING, "Mod '%s' not longer available", _llUtils()->CrunchCurrent());
+								 }
+								 if (checkedListBox1->CheckedItems->Count != 0) 
+									 this->tab_ws->Enabled = true;
+								 else 
+									 this->tab_ws->Enabled = false;
+							 }
+							 if (strcmp(_llUtils()->myflagname,"_worldspace") == 0) {
+								 tab_ws->Enabled = false;
+								 this->tab->SelectedIndex = 2;
+								 ws_primary = gcnew String(_llUtils()->myflagvalue);
+								 if (backgroundWorker3->IsBusy) {
+									 this->backgroundWorker3->CancelAsync();
+									 MessageBox::Show(L"Background worldspace reader didn't finished - break and go for coffee....", L"Info");
+								 }
+								 //BUGBUG:
+								 while (backgroundWorker3->IsBusy);
+								 tab_ws->Enabled = false;
+								 //Fill the mod list
+								 input_count = checkedListBox1->CheckedItems->Count;
+								 msclr::interop::marshal_context cxt; 
+								 for (int i=0; i<checkedListBox1->CheckedItems->Count; i++) {
+									 input_filename[i] = 
+										 _llUtils()->NewString(cxt.marshal_as<char const*>(checkedListBox1->GetItemText(checkedListBox1->CheckedItems[i])));
+								 }
+								 backgroundWorker3->RunWorkerAsync(0);
+								 //while (!tab_ws->Enabled);
+								 //this->tab->SelectedIndex=0;
+							 }
+							 //mesg->WriteNextLine(LOG_WARNING, "%s %u %u", _llUtils()->myflagname, tab, obj);
+							 if (tab>-1 && obj>-1 && tab_app[tab]->Controls[obj]) {
+								 //mesg->WriteNextLine(LOG_WARNING, "%s %u %u", _llUtils()->myflagname, tab, obj);
+								 CheckBox ^tmp = dynamic_cast<CheckBox^>(tab_app[tab]->Controls[obj]);
+								 if (tmp) {
+									 if (_llUtils()->IsEnabled(_llUtils()->myflagname))
+										 tmp->Checked = true;
+									 else
+										 tmp->Checked = false;
+								 }
+								 TextBox ^tmp2 = dynamic_cast<TextBox^>(tab_app[tab]->Controls[obj]);
+								 if (tmp2) {
+									 if (tmp2->BorderStyle == System::Windows::Forms::BorderStyle::FixedSingle)
+										 tmp2->Text = gcnew String(_llUtils()->myflagvalue);
+								 }
+							 } else	 {
+								 for (int ii=0; ii<tab_app->Length; ii++) {
+									 for (int ij=0; ij<tab_app[ii]->Controls->Count; ij++) {
+										 ComboBox ^dropdown = dynamic_cast<ComboBox^>(tab_app[ii]->Controls[ij]);
+										 if (dropdown && _llUtils()->GetDescription(_llUtils()->myflagname)) {
+											 //mesg->WriteNextLine(MH_WARNING,"%s",batch->myflagname);
+											 int index = dropdown->FindStringExact(gcnew String(_llUtils()->GetDescription(_llUtils()->myflagname)));
+											 if (index>=0 && _llUtils()->IsEnabled(_llUtils()->myflagname)) {
+												 dropdown->SelectedIndex = index;
+											 }
+										 }
+									 }
+								 }
+							 }
+							 _llUtils()->myflagname = nullptr;
+						 }
 
 						 if (com == COM_SETPATH) {
 							 searchdir = gcnew String(flagtext);
@@ -1667,6 +1743,7 @@ namespace mpgui {
 					 //update _modlist
 					 const char *flagname = cxt.marshal_as<char const*>(checkedListBox1->GetItemText(checkedListBox1->CheckedItems[ i ]));;
 					 int g = strlen(modlist);
+					 flagname = _llUtils()->Replace(flagname, ",", "\\,", 100);
 					 Dump();
 					 if (i>0) //BUGBUG: check komma
 						 sprintf_s(modlist, 50000-g, "%s,%s", modlist, flagname); 
@@ -1996,8 +2073,10 @@ namespace mpgui {
 
 			 }
 	private: System::Void referenceManualToolStripMenuItem_Click(System::Object ^sender, System::EventArgs ^e) {
-				 if (System::IO::File::Exists(installdir + L"\\doc\\REFERENCE_MANUAL.pdf"))
-					 System::Diagnostics::Process::Start(installdir + L"\\doc\\REFERENCE_MANUAL.pdf");
+				 //if (System::IO::File::Exists(installdir + L"\\doc\\REFERENCE_MANUAL.pdf"))
+					//System::Diagnostics::Process::Start(installdir + L"\\doc\\REFERENCE_MANUAL.pdf");
+					 System::Diagnostics::Process::Start(L"https://github.com/Gruftikus/mpgui");
+				 //CreateProcess(NULL, L"start https://github.com/Gruftikus/mpgui", NULL, NULL, FALSE, 0, NULL, NULL, NULL, NULL);
 			 }
 	private: System::Void userReadmeToolStripMenuItem_Click(System::Object ^sender, System::EventArgs ^e) {
 				 if (System::IO::File::Exists(installdir + L"\\doc\\USER_README.pdf"))

@@ -57,7 +57,7 @@ int llGameMode::Exec(void) {
 	gamemode = 0;
 	for (int i=0; i<MAX_GAMES; i++) {
 		if (game[i] && _stricmp(game[i], name) == 0) {
-			_llLogger()->WriteNextLine(LOG_INFO, "Game mode set to %s (-n=%i)", COM_GAMEMODE_CMD, name, i);
+			_llLogger()->WriteNextLine(LOG_INFO, "Game mode set to %s (-n=%i)", name, i);
 			gamemode = i;
 			_llUtils()->SetValue("_gamemode", game[gamemode]);
 			_llUtils()->SetHidden("_gamemode");
