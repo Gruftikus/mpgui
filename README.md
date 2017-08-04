@@ -40,28 +40,28 @@ The tab sections itself are evaluated directly after the batch file has been loa
 
 ## Game management
 
-* [`AddGame`](https://github.com/Gruftikus/lltool/wiki/AddGame)
-* [`SetGamePluginFile`](https://github.com/Gruftikus/lltool/wiki/SetGamePluginFile)
-* [`SetGameSearchPattern`](https://github.com/Gruftikus/lltool/wiki/SetGameSearchPattern)
-* [`SetGameStdWorldspace`](https://github.com/Gruftikus/lltool/wiki/SetGameStdWorldspace)
-* [`GameMode`](https://github.com/Gruftikus/lltool/wiki/GameMode)
+* [`AddGame`](https://github.com/Gruftikus/mpgui/wiki/AddGame)
+* [`SetGamePluginFile`](https://github.com/Gruftikus/mpgui/wiki/SetGamePluginFile)
+* [`SetGameSearchPattern`](https://github.com/Gruftikus/mpgui/wiki/SetGameSearchPattern)
+* [`SetGameStdWorldspace`](https://github.com/Gruftikus/mpgui/wiki/SetGameStdWorldspace)
+* [`GameMode`](https://github.com/Gruftikus/mpgui/wiki/GameMode)
 
 ## Miscellaneous GUI commands
 
-* [`GUIRequestVersion`](https://github.com/Gruftikus/lltool/wiki/GUIRequestVersion)
-* [`GUIConsoleEcho`](https://github.com/Gruftikus/lltool/wiki/GUIConsoleEcho)
-* [`GUIMessageBox`](https://github.com/Gruftikus/lltool/wiki/GUIMessageBox)
-* [`GUIExec`](https://github.com/Gruftikus/lltool/wiki/GUIExec)
+* [`GUIRequestVersion`](https://github.com/Gruftikus/mpgui/wiki/GUIRequestVersion)
+* [`GUIConsoleEcho`](https://github.com/Gruftikus/mpgui/wiki/GUIConsoleEcho)
+* [`GUIMessageBox`](https://github.com/Gruftikus/mpgui/wiki/GUIMessageBox)
+* [`GUIExec`](https://github.com/Gruftikus/mpgui/wiki/GUIExec)
 
 ## Graphics GUI commands
 
-* [`GUITextBox`](https://github.com/Gruftikus/lltool/wiki/GUITextBox)
-* [`GUICheckBox`](https://github.com/Gruftikus/lltool/wiki/GUICheckBox)
-* [`GUIDropDown`](https://github.com/Gruftikus/lltool/wiki/GUIDropDown)
-* [`GUIDropDownItem`](https://github.com/Gruftikus/lltool/wiki/GUIDropDownItem)
-* [`GUIButton`](https://github.com/Gruftikus/lltool/wiki/GUIButton)
-* [`GUIEnable`](https://github.com/Gruftikus/lltool/wiki/GUIEnable)
-* [`GUIDisable`](https://github.com/Gruftikus/lltool/wiki/GUIDisable)
+* [`GUITextBox`](https://github.com/Gruftikus/mpgui/wiki/GUITextBox)
+* [`GUICheckBox`](https://github.com/Gruftikus/mpgui/wiki/GUICheckBox)
+* [`GUIDropDown`](https://github.com/Gruftikus/mpgui/wiki/GUIDropDown)
+* [`GUIDropDownItem`](https://github.com/Gruftikus/mpgui/wiki/GUIDropDownItem)
+* [`GUIButton`](https://github.com/Gruftikus/mpgui/wiki/GUIButton)
+* [`GUIEnable`](https://github.com/Gruftikus/mpgui/wiki/GUIEnable)
+* [`GUIDisable`](https://github.com/Gruftikus/mpgui/wiki/GUIDisable)
 
 
 
